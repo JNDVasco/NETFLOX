@@ -1,3 +1,18 @@
+# ==============================================================
+# Base de Dados - UCoimbra MiEEC 2020/2021
+# Projeto: NETFLOX
+# Gonçalo Cavaleiro - UC6969696969
+# João Vasco        - UC2019236378
+#
+# Ficheiro: Main
+#
+# Descrição:
+#
+#
+# Depêndencias              Versão
+# ==============================================================
+
+
 import configparser
 
 if __name__ == '__main__':
