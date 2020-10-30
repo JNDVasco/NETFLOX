@@ -1,7 +1,7 @@
 # ==============================================================
 # Base de Dados - UCoimbra MiEEC 2020/2021
 # Projeto: NETFLOX
-# Gonçalo Cavaleiro - UC6969696969
+# Gonçalo Cavaleiro - UC2018279569
 # João Vasco        - UC2019236378
 #
 # Ficheiro: Main
