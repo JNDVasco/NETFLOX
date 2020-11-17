@@ -13,6 +13,7 @@
 # ==============================================================
 
 # ==== Import files ====
+import menus as draw
 import database as db
 
 
@@ -21,25 +22,16 @@ import database as db
 
 def main():
     cursor = db.connectToDB()
-    cursor.execute("""SELECT table_name FROM information_schema.tables
-           WHERE table_schema = 'public'""")
-    for table in cursor.fetchall():
-        print(table)
 
-    table = input("Qual a tabela? ->")
+    # Print PostgreSQL version
+    cursor.execute("SELECT version();")
+    record = cursor.fetchone()
+    print("You are connected to - ", record, "\n")
 
-    print("Dados da tabela")
-    postgreSQL_select_Query = "select * from %s" % table
+    cursor.close()
 
-    cursor.execute(postgreSQL_select_Query)
-    print("Selecting rows from mobile table using cursor.fetchall")
-    mobile_records = cursor.fetchall()
+    db.closeConnectionDB()
 
-    print("Print each row and it's columns values")
-    for row in mobile_records:
-        print("Id = ", row[0], )
-        print("Country = ", row[1])
-        print("Last Update  = ", row[2], "\n")
 
 if __name__ == '__main__':
     print("==== NetFLOX starting! ====")

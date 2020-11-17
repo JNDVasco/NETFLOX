@@ -1,5 +1,8 @@
 import configparser
+
 import psycopg2
+
+global db
 
 def connectToDB():
     config = configparser.ConfigParser()
@@ -15,15 +18,12 @@ def connectToDB():
     db = psycopg2.connect(**dbParams)
 
     cursor = db.cursor()
+
     # Print PostgreSQL Connection properties
     print(db.get_dsn_parameters(), "\n")
-
-    # Print PostgreSQL version
-    cursor.execute("SELECT version();")
-    record = cursor.fetchone()
-    print("You are connected to - ", record, "\n")
 
     return cursor
 
 
-
+def closeConnectionDB():
+    db.close()
