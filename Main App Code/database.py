@@ -2,7 +2,6 @@ import configparser
 
 import psycopg2
 
-global db
 
 def connectToDB():
     config = configparser.ConfigParser()
@@ -23,7 +22,3 @@ def connectToDB():
     print(db.get_dsn_parameters(), "\n")
 
     return cursor
-
-
-def closeConnectionDB():
-    db.close()

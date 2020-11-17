@@ -11,6 +11,9 @@ borderY = term.height // 6
 
 
 # print(term.home + term.on_blue + term.clear) Clear Screen
+
+# ==== First Pages ====
+
 # Status: SemiDone
 def firstPage():
     # Always clear the screen first
@@ -76,6 +79,7 @@ def newAccount():
 
 
 # ==== User Menus ====
+
 # Status: SemiDone
 def mainMenuUser(username, balance, unreadMessages):
     # Always clear the screen first
@@ -93,7 +97,7 @@ def mainMenuUser(username, balance, unreadMessages):
     strToPrint = "Bem-vindo, " + username + "."
     print(term.move_xy(borderX, borderY + 2) + term.turquoise1 + strToPrint)
 
-    strToPrint = "Saldo disponível: " + str(balance / 1000) + "€"
+    strToPrint = "Saldo disponível: " + str(balance / 100) + "€"
     print(term.move_xy(borderX, borderY + 3) + term.turquoise1 + strToPrint)
 
     # Menus
@@ -547,7 +551,8 @@ if __name__ == '__main__':
     print("==== NetFLOX starting! ====")
     firstPage()
     time.sleep(5)
-    mainMenuUser("João", 20124, 2)
-    time.sleep(40)
+    mainMenuUser("João", 2124, 2)
+    while True:
+        time.sleep(1)
     # Reset when leaving
     print(term.home + term.on_black + term.white + term.clear)

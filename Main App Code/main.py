@@ -30,9 +30,6 @@ def main():
 
     cursor.close()
 
-    db.closeConnectionDB()
-
-
 if __name__ == '__main__':
     print("==== NetFLOX starting! ====")
     main()
