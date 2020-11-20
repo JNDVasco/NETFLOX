@@ -74,6 +74,13 @@ def newAccount():
     strToPrint = "Bases de Dados 2020/2021"
     print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
 
+    # Footer text
+    strToPrint = "Nova conta user V1"
+    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+
+    strToPrint = "JNDVasco"
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+
     # Main Body
     strToPrint = "Criar conta no NetFLOX"
     print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.orangered2 + strToPrint)
@@ -86,13 +93,6 @@ def newAccount():
 
     strToPrint = "Password: "
     password = input(term.move_xy((term.width // 2) - 11, borderY + 11) + term.turquoise1 + strToPrint)
-
-    # Footer text
-    strToPrint = "Nova conta user V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
-
-    strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
 
     return username, email, password
 

@@ -21,4 +21,4 @@ def connectToDB():
     # Print PostgreSQL Connection properties
     print(db.get_dsn_parameters(), "\n")
 
-    return cursor
+    return cursor, db

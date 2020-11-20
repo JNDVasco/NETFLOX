@@ -7,5 +7,11 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/DVD</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="netflox@amazonaws" uuid="7551f2a6-11bf-47c7-969e-9b7b2f7f450a">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://ec2-54-247-122-209.eu-west-1.compute.amazonaws.com:5432/d3tpi6o5olh2m6</jdbc-url>
+    </data-source>
   </component>
 </project>
