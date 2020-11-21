@@ -94,6 +94,8 @@ def newAccount():
     strToPrint = "Password: "
     password = input(term.move_xy((term.width // 2) - 11, borderY + 11) + term.turquoise1 + strToPrint)
 
+    print(term.home + term.on_black + term.clear)
+
     return username, email, password
 
 # ==== User Menus ====

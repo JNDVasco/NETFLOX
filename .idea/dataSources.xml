@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="DVD@localhost" uuid="0f4b266b-a8f3-4830-9242-4d36c14cbec2">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/DVD</jdbc-url>
-    </data-source>
-    <data-source source="LOCAL" name="netflox@amazonaws" uuid="7551f2a6-11bf-47c7-969e-9b7b2f7f450a">
+    <data-source source="LOCAL" name="NetFLOX@AmazonAWS" uuid="7551f2a6-11bf-47c7-969e-9b7b2f7f450a">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

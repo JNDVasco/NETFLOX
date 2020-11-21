@@ -14,7 +14,8 @@
 # ==== Import files ====
 import database as db
 import menus as draw
-
+import passwordEncryption as pwd
+import random
 
 # ==== startUp funtion ====
 # ==== End startUp funtion ====
@@ -33,7 +34,26 @@ def main():
     print("Email:", userInfo[1])
     print("Password:", userInfo[2])
 
-    command = "INSERT INTO cliente(id_cliente,nome, email, password) VALUES (2,'%s','%s','%s')" % (
+
+    my_password = b"%s" % (userInfo[2])
+    my_data = b"mainString"
+
+    print("key:  {}".format(my_password))
+    print("data: {}".format(my_data))
+    encrypted = pwd.encrypt(my_password, my_data)
+    print("\nenc:  {}".format(encrypted))
+    decrypted = pwd.decrypt(my_password, encrypted)
+    print("dec:  {}".format(decrypted))
+    print("\ndata match: {}".format(my_data == decrypted))
+    print("\nSecond round....")
+    encrypted = pwd.encrypt(my_password, my_data)
+    print("\nenc:  {}".format(encrypted))
+    decrypted = pwd.decrypt(my_password, encrypted)
+    print("dec:  {}".format(decrypted))
+    print("\ndata match: {}".format(my_data == decrypted))
+
+
+    command = "INSERT INTO cliente(id_cliente,nome, email, password) VALUES (,'%s','%s','%s')" % (
         userInfo[0], userInfo[1], userInfo[2])
 
     cursor.execute(command)
