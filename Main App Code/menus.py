@@ -570,7 +570,7 @@ def sendMessageAdmin():
 if __name__ == '__main__':
     print("==== NetFLOX starting! ====")
     firstPage()
-    time
+    time.sleep(5)
     output = newAccount()
     # Reset when leaving
     print(term.home + term.on_black + term.white + term.clear)

@@ -12,10 +12,12 @@
 # Depêndencias              Versão
 # ==============================================================
 # ==== Import files ====
+import random
+
 import database as db
 import menus as draw
 import passwordEncryption as pwd
-import random
+
 
 # ==== startUp funtion ====
 # ==== End startUp funtion ====
@@ -34,8 +36,7 @@ def main():
     print("Email:", userInfo[1])
     print("Password:", userInfo[2])
 
-
-    my_password = b"%s" % (userInfo[2])
+    my_password = userInfo[2].encode('UTF-8')
     my_data = b"mainString"
 
     print("key:  {}".format(my_password))
@@ -52,9 +53,8 @@ def main():
     print("dec:  {}".format(decrypted))
     print("\ndata match: {}".format(my_data == decrypted))
 
-
-    command = "INSERT INTO cliente(id_cliente,nome, email, password) VALUES (,'%s','%s','%s')" % (
-        userInfo[0], userInfo[1], userInfo[2])
+    command = "INSERT INTO cliente(id_cliente, nome, email, password) VALUES ('%s','%s','%s','%s')" % (
+        random.randint(0, 1024), userInfo[0], userInfo[1], userInfo[2])
 
     cursor.execute(command)
 
