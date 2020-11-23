@@ -7019,8 +7019,10 @@ false posixrules
     <database id="1404" parent="1" name="dceboqkca71ddm">
       <ObjectId>105823138</ObjectId>
       <Owner>lbkoexwzuhsloo</Owner>
-      <IntrospectionStateNumber>248891414</IntrospectionStateNumber>
+      <IntrospectionStateNumber>248906996</IntrospectionStateNumber>
       <Current>1</Current>
+      <Relations>sequence|table|106265534|106265536|1
+</Relations>
     </database>
     <database id="1405" parent="1" name="dcejbtrd2ro2o1">
       <ObjectId>16385</ObjectId>
@@ -18434,7 +18436,7 @@ false posixrules
       <Comment>standard public schema</Comment>
       <StateNumber>247202166</StateNumber>
       <Owner>lbkoexwzuhsloo</Owner>
-      <IntrospectionStateNumber>248891423</IntrospectionStateNumber>
+      <IntrospectionStateNumber>248907133</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <access-method id="3888" parent="1404" name="heap">
@@ -18504,5 +18506,72 @@ false posixrules
     <language id="3897" parent="1404" name="internal"/>
     <language id="3898" parent="1404" name="plpgsql"/>
     <language id="3899" parent="1404" name="sql"/>
+    <sequence id="3900" parent="3887" name="cliente_ID_Cliente_seq">
+      <ObjectId>106265534</ObjectId>
+      <Owner>lbkoexwzuhsloo</Owner>
+      <StateNumber>248904174</StateNumber>
+      <DataType>integer|0s</DataType>
+    </sequence>
+    <table id="3901" parent="3887" name="cliente">
+      <ObjectId>106265536</ObjectId>
+      <Comment>//This table holds the clients</Comment>
+      <Owner>lbkoexwzuhsloo</Owner>
+      <StateNumber>248904174</StateNumber>
+    </table>
+    <column id="3902" parent="3901" name="ID_Cliente">
+      <Position>1</Position>
+      <DataType>integer|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>248904174</StateNumber>
+      <DefaultExpression>nextval(&apos;&quot;cliente_ID_Cliente_seq&quot;&apos;::regclass)</DefaultExpression>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="3903" parent="3901" name="Nome">
+      <Position>2</Position>
+      <DataType>text|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>248904174</StateNumber>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="3904" parent="3901" name="email">
+      <Position>3</Position>
+      <DataType>text|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>248906981</StateNumber>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="3905" parent="3901" name="password">
+      <Position>4</Position>
+      <DataType>text|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>248904174</StateNumber>
+      <TypeId>25</TypeId>
+    </column>
+    <index id="3906" parent="3901" name="cliente_id_cliente_uindex">
+      <ObjectId>106265544</ObjectId>
+      <StateNumber>248904177</StateNumber>
+      <ColNames>ID_Cliente</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <index id="3907" parent="3901" name="cliente_pk">
+      <ObjectId>106265545</ObjectId>
+      <StateNumber>248904178</StateNumber>
+      <ColNames>ID_Cliente</ColNames>
+      <Unique>1</Unique>
+      <Primary>1</Primary>
+    </index>
+    <index id="3908" parent="3901" name="cliente_email_uindex">
+      <ObjectId>106265543</ObjectId>
+      <StateNumber>248904176</StateNumber>
+      <ColNames>email</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <key id="3909" parent="3901" name="cliente_pk">
+      <ObjectId>106265546</ObjectId>
+      <StateNumber>248904178</StateNumber>
+      <ColNames>ID_Cliente</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>cliente_pk</UnderlyingIndexName>
+    </key>
   </database-model>
 </dataSource>
