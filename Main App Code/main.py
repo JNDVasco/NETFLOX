@@ -12,11 +12,9 @@
 # Depêndencias              Versão
 # ==============================================================
 # ==== Import files ====
-import random
 
 import database as db
-import menus as draw
-import passwordEncryption as pwd
+import menus as menu
 
 
 # ==== startUp funtion ====
@@ -30,41 +28,54 @@ def main():
     record = cursor.fetchone()
     print("You are connected to - ", record, "\n")
 
-    userInfo = draw.newAccount()
+    option = menu.firstPage()
 
-    print("Nome:", userInfo[0])
-    print("Email:", userInfo[1])
-    print("Password:", userInfo[2])
+    if option == 2:
+        userInfo = menu.newAccount()
 
-    my_password = userInfo[2].encode('UTF-8')
-    my_data = b"mainString"
+        print("Nome:", userInfo[0])
+        print("Email:", userInfo[1])
+        print("Password:", userInfo[2])
 
-    print("key:  {}".format(my_password))
-    print("data: {}".format(my_data))
-    encrypted = pwd.encrypt(my_password, my_data)
-    print("\nenc:  {}".format(encrypted))
-    decrypted = pwd.decrypt(my_password, encrypted)
-    print("dec:  {}".format(decrypted))
-    print("\ndata match: {}".format(my_data == decrypted))
-    print("\nSecond round....")
-    encrypted = pwd.encrypt(my_password, my_data)
-    print("\nenc:  {}".format(encrypted))
-    decrypted = pwd.decrypt(my_password, encrypted)
-    print("dec:  {}".format(decrypted))
-    print("\ndata match: {}".format(my_data == decrypted))
+        command = "INSERT INTO cliente(nome, email, password) VALUES ('%s','%s','%s')" % (
+            userInfo[0], userInfo[1], userInfo[2])
 
-    command = "INSERT INTO cliente(id_cliente, nome, email, password) VALUES ('%s','%s','%s','%s')" % (
-        random.randint(0, 1024), userInfo[0], userInfo[1], userInfo[2])
+        cursor.execute(command)
 
-    cursor.execute(command)
+        # Importante! Torna as alterações à base de dados persistentes
+        conn.commit()
 
-    # Importante! Torna as alterações à base de dados persistentes
-    conn.commit()
+    # my_password = userInfo[2].encode('UTF-8')
+    # my_data = b"mainString"
+    #
+    # print("key:  {}".format(my_password))
+    # print("data: {}".format(my_data))
+    # encrypted = pwd.encrypt(my_password, my_data)
+    # print("\nenc:  {}".format(encrypted))
+    # decrypted = pwd.decrypt(my_password, encrypted)
+    # print("dec:  {}".format(decrypted))
+    # print("\ndata match: {}".format(my_data == decrypted))
+    # print("\nSecond round....")
+    # encrypted = pwd.encrypt(my_password, my_data)
+    # print("\nenc:  {}".format(encrypted))
+    # decrypted = pwd.decrypt(my_password, encrypted)
+    # print("dec:  {}".format(decrypted))
+    # print("\ndata match: {}".format(my_data == decrypted))
 
     cursor.close()
     conn.close()
+
+    print("Fim, opção:", option)
 
 
 if __name__ == '__main__':
     print("==== NetFLOX starting! ====")
     main()
+
+    # integer = menu.getUserInput_Integer("Teste Inteiro: ", 20)
+    # email = menu.getUserInput_Email("Teste Email: ", 24)
+    # string = menu.getUserInput_String("Teste String: ", 28)
+    #
+    # print("Inteiro:", integer)
+    # print("Email:", email)
+    # print("String:", string)

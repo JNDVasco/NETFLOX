@@ -9,14 +9,80 @@ term = Terminal()
 borderX = term.width // 5
 borderY = term.height // 6
 
+# just a line to clear a specific part
+blankLine = "thisStringJustGetsPrintedInBlackToClearTheLine"
+
+
 # Colors
-#   orangered2
-#   turquoise1
+# Main:        palegreen1
+# Secondary:   lightcyan
+# Error:       tomato
 #
-#
-
-
 # print(term.home + term.on_blue + term.clear) Clear Screen
+
+# ==== Get User Input ====
+# This funtion get the user input, forces to be an integer
+# Status: Done
+def getUserInput_Integer(str, posY):
+    errorStr = "Dê-me o número correspondente à opção!"
+
+    posX = ((term.width // 2) - (len(str) // 2))
+
+    while True:
+        try:
+            userInput = int(input(term.move_xy(posX, borderY + posY + 1) + term.lightcyan + str))
+        except ValueError:
+            print(term.move_xy((term.width // 2) - (len(errorStr) // 2), borderY + posY) + term.tomato + errorStr)
+            print(term.move_xy(posX + 1, borderY + posY + 1) + term.black + blankLine)
+            continue
+        else:
+            return userInput
+
+# ==== Get User Input ====
+# This funtion get the user input, forces to be an email
+# Just checks if there is a "@" present
+# Removes all spaces at the start and the end
+# Status: Done
+def getUserInput_Email(str, posY):
+    errorStr = "Dê-me um email válido!"
+
+    posX = ((term.width // 2) - (len(str) // 2))
+
+    while True:
+        userInput = input(term.move_xy(posX, borderY + posY + 1) + term.lightcyan + str)
+        userInput = userInput.strip()  # Remove all spaces at start and end
+
+        if userInput.find("@") == -1:
+            print(term.move_xy((term.width // 2) - (len(errorStr) // 2), borderY + posY) + term.tomato + errorStr)
+            print(term.move_xy(posX + 1, borderY + posY + 1) + term.black + blankLine)
+        else:
+            break
+    return userInput
+
+# ==== Get User Input ====
+# This funtion get the user input, forces to be an string
+# Just checks if there is any char after removing spaces
+# Removes all spaces at the start and the end
+# Status: Done
+def getUserInput_String(str, posY):
+    errorStr = "Dê-me pelo menos um caracter!"
+
+    posX = ((term.width // 2) - (len(str) // 2))
+
+    while True:
+        userInput = input(term.move_xy(posX, borderY + posY + 1) + term.lightcyan + str)
+        userInput = userInput.strip()  # Remove all spaces at start and end
+
+        if userInput == "":
+            print(term.move_xy((term.width // 2) - (len(errorStr) // 2), borderY + posY) + term.tomato + errorStr)
+            print(term.move_xy(posX + 1, borderY + posY + 1) + term.black + blankLine)
+        else:
+            break
+
+    return userInput
+
+
+# ======================================================
 
 # ==== First Pages ====
 
@@ -27,39 +93,41 @@ def firstPage():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
+
+    # Footer text
+    strToPrint = "Página Inicial V1"
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
+
+    strToPrint = "JNDVasco"
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
     strToPrint = "Bem-vindo ao NetFLOX"
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.orangered2 + strToPrint)
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.palegreen1 + strToPrint)
 
     strToPrint = "== Utilizadores =="
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 7) + term.turquoise1 + strToPrint)
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 7) + term.lightcyan + strToPrint)
 
     strToPrint = "[1] -> Fazer login"
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 8) + term.turquoise1 + strToPrint)
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 8) + term.lightcyan + strToPrint)
 
     strToPrint = "[2] -> Criar Conta"
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 9) + term.turquoise1 + strToPrint)
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 9) + term.lightcyan + strToPrint)
 
     strToPrint = "== Administradores =="
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 12) + term.turquoise1 + strToPrint)
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 12) + term.lightcyan + strToPrint)
 
     strToPrint = "[3] -> Fazer login"
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 13) + term.turquoise1 + strToPrint)
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 13) + term.lightcyan + strToPrint)
 
-    # Footer text
-    strToPrint = "Escolha o que deseja fazer a partir das opções de cima"
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 16) + term.turquoise1 + strToPrint)
+    strToPrint = "Escolha uma das opções a cima: "
+    option = getUserInput_Integer(strToPrint, 15)
 
-    strToPrint = "Página Inicial V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
-
-    strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    return option
 
 
 # Status: notDone
@@ -69,34 +137,69 @@ def newAccount():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Footer text
     strToPrint = "Nova conta user V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
     strToPrint = "Criar conta no NetFLOX"
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.orangered2 + strToPrint)
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.palegreen1 + strToPrint)
 
     strToPrint = "Nome utilizador: "
-    username = input(term.move_xy((term.width // 2) - 11, borderY + 7) + term.turquoise1 + strToPrint)
+    username = input(term.move_xy((term.width // 2) - 11, borderY + 7) + term.lightcyan + strToPrint)
 
     strToPrint = "Email: "
-    email = input(term.move_xy((term.width // 2) - 11, borderY + 9) + term.turquoise1 + strToPrint)
+    email = input(term.move_xy((term.width // 2) - 11, borderY + 9) + term.lightcyan + strToPrint)
 
     strToPrint = "Password: "
-    password = input(term.move_xy((term.width // 2) - 11, borderY + 11) + term.turquoise1 + strToPrint)
+    password = input(term.move_xy((term.width // 2) - 11, borderY + 11) + term.lightcyan + strToPrint)
 
     print(term.home + term.on_black + term.clear)
 
     return username, email, password
+
+
+def login():
+    # Always clear the screen first
+    print(term.home + term.on_black + term.clear)
+
+    # Header text
+    strToPrint = "Aplicação NetFLOX"
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
+
+    strToPrint = "Bases de Dados 2020/2021"
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
+
+    # Footer text
+    strToPrint = "Login V1"
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
+
+    strToPrint = "JNDVasco"
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
+
+    # Main Body
+    strToPrint = "Criar conta no NetFLOX"
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.palegreen1 + strToPrint)
+
+    strToPrint = "Nome utilizador: "
+    username = input(term.move_xy((term.width // 2) - 11, borderY + 7) + term.lightcyan + strToPrint)
+
+    strToPrint = "Email: "
+    email = input(term.move_xy((term.width // 2) - 11, borderY + 9) + term.lightcyan + strToPrint)
+
+    strToPrint = "Password: "
+    password = input(term.move_xy((term.width // 2) - 11, borderY + 11) + term.lightcyan + strToPrint)
+
+    print(term.home + term.on_black + term.clear)
+
 
 # ==== User Menus ====
 
@@ -107,44 +210,44 @@ def mainMenuUser(username, balance, unreadMessages):
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
     # User info
     strToPrint = "Bem-vindo, " + username + "."
-    print(term.move_xy(borderX, borderY + 2) + term.turquoise1 + strToPrint)
+    print(term.move_xy(borderX, borderY + 2) + term.lightcyan + strToPrint)
 
     strToPrint = "Saldo disponível: " + str(balance / 100) + "€"
-    print(term.move_xy(borderX, borderY + 3) + term.turquoise1 + strToPrint)
+    print(term.move_xy(borderX, borderY + 3) + term.lightcyan + strToPrint)
 
     # Menus
     strToPrint = "Escolha a opção pretendida"
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.orangered2 + strToPrint)
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.palegreen1 + strToPrint)
 
     strToPrint = "[1] -> Artigos "
-    print(term.move_xy((term.width // 2) - (10), borderY + 7) + term.turquoise1 + strToPrint)
+    print(term.move_xy((term.width // 2) - 10, borderY + 7) + term.lightcyan + strToPrint)
 
     strToPrint = "[2] -> Ver artigos"
-    print(term.move_xy((term.width // 2) - (10), borderY + 8) + term.turquoise1 + strToPrint)
+    print(term.move_xy((term.width // 2) - 10, borderY + 8) + term.lightcyan + strToPrint)
 
     strToPrint = "[3] -> Artigos atuais"
-    print(term.move_xy((term.width // 2) - (10), borderY + 9) + term.turquoise1 + strToPrint)
+    print(term.move_xy((term.width // 2) - 10, borderY + 9) + term.lightcyan + strToPrint)
 
     strToPrint = "[4] -> Histórico e Estatísticas"
-    print(term.move_xy((term.width // 2) - (10), borderY + 12) + term.turquoise1 + strToPrint)
+    print(term.move_xy((term.width // 2) - 10, borderY + 12) + term.lightcyan + strToPrint)
 
     strToPrint = "[5] -> Caixa de Entrada (" + str(unreadMessages) + ")"
-    print(term.move_xy((term.width // 2) - (10), borderY + 15) + term.turquoise1 + strToPrint)
+    print(term.move_xy((term.width // 2) - 10, borderY + 15) + term.lightcyan + strToPrint)
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -154,19 +257,19 @@ def artigoUser():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -176,19 +279,19 @@ def artigoDisponiveisUser():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -198,19 +301,19 @@ def artigoDisponiveisSearchUser():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -220,19 +323,19 @@ def artigoAlugarUser():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -242,19 +345,19 @@ def artigoDetalhesUser():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -264,19 +367,19 @@ def artigoAtuaisUser():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -286,19 +389,19 @@ def artigoAtuaisSearchUser():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -308,19 +411,19 @@ def artigoHistoryUser():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -330,19 +433,19 @@ def inboxUser():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -352,19 +455,19 @@ def readMessageUser():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # ==== Admin Menus ====
@@ -375,19 +478,19 @@ def mainMenuAdmin():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -397,19 +500,19 @@ def artigoGestaoAdmin():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -419,19 +522,19 @@ def artigoCorrigirPrecoAdmin():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -441,19 +544,19 @@ def artigoAddRemoveAdmin():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -463,19 +566,19 @@ def artigoVerAdmin():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -485,19 +588,19 @@ def aumentarSaldoAdmin():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -507,19 +610,19 @@ def estatisticasAdmin():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -529,19 +632,19 @@ def inboxAdmin():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Status: notDone
@@ -551,19 +654,19 @@ def sendMessageAdmin():
 
     # Header text
     strToPrint = "Aplicação NetFLOX"
-    print(term.move_xy(borderX, borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "Bases de Dados 2020/2021"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
 
     # Footer text
     strToPrint = "Menu Inicial User V1"
-    print(term.move_xy(borderX, term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(borderX, term.height - borderY) + term.palegreen1 + strToPrint)
 
     strToPrint = "JNDVasco"
-    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.orangered2 + strToPrint)
+    print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
 
 # Main for test
