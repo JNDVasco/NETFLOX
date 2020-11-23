@@ -22,3 +22,7 @@ def connectToDB():
     print(db.get_dsn_parameters(), "\n")
 
     return cursor, db
+
+
+if __name__ == '__main__':
+    print("Database")

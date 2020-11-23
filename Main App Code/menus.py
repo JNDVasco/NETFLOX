@@ -1,3 +1,21 @@
+#==============================================================
+# Base de Dados - UCoimbra MiEEC 2020/2021
+# Projeto: NETFLOX
+# Gonçalo Cavaleiro - UC2018279569
+# João Vasco        - UC2019236378
+#
+# Ficheiro: menus.py
+#
+# Descrição:
+#
+#
+# Colors
+# Main:        palegreen1
+# Secondary:   lightcyan
+# Error:       tomato
+#
+# print(term.home + term.on_blue + term.clear) Clear Screen
+#==============================================================
 import time
 
 from blessed import Terminal
@@ -11,14 +29,6 @@ borderY = term.height // 6
 
 # just a line to clear a specific part
 blankLine = "thisStringJustGetsPrintedInBlackToClearTheLine"
-
-
-# Colors
-# Main:        palegreen1
-# Secondary:   lightcyan
-# Error:       tomato
-#
-# print(term.home + term.on_blue + term.clear) Clear Screen
 
 # ==== Get User Input ====
 # This funtion get the user input, forces to be an integer
@@ -37,6 +47,7 @@ def getUserInput_Integer(str, posY):
             continue
         else:
             return userInput
+
 
 # ==== Get User Input ====
 # This funtion get the user input, forces to be an email
@@ -58,6 +69,7 @@ def getUserInput_Email(str, posY):
         else:
             break
     return userInput
+
 
 # ==== Get User Input ====
 # This funtion get the user input, forces to be an string
@@ -154,13 +166,13 @@ def newAccount():
     print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.palegreen1 + strToPrint)
 
     strToPrint = "Nome utilizador: "
-    username = input(term.move_xy((term.width // 2) - 11, borderY + 7) + term.lightcyan + strToPrint)
+    username = getUserInput_String(strToPrint, 7)
 
     strToPrint = "Email: "
-    email = input(term.move_xy((term.width // 2) - 11, borderY + 9) + term.lightcyan + strToPrint)
+    email = getUserInput_Email(strToPrint, 9)
 
     strToPrint = "Password: "
-    password = input(term.move_xy((term.width // 2) - 11, borderY + 11) + term.lightcyan + strToPrint)
+    password = getUserInput_String(strToPrint, 11)
 
     print(term.home + term.on_black + term.clear)
 

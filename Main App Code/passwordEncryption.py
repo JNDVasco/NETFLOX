@@ -29,3 +29,7 @@ def decrypt(key, source, decode=True):
     if data[-padding:] != bytes([padding]) * padding:  # Python 2.x: chr(padding) * padding
         raise ValueError("Invalid padding...")
     return data[:-padding]  # remove the padding
+
+
+if __name__ == '__main__':
+    print("passWord Encryption")
