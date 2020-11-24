@@ -37,7 +37,7 @@ def main():
         print("Email:", userInfo[1])
         print("Password:", userInfo[2])
 
-        command = "INSERT INTO cliente(nome, email, password) VALUES ('%s','%s','%s')" % (
+        command = "INSERT INTO cliente(Nome, email, password) VALUES ('%s','%s','%s')" % (
             userInfo[0], userInfo[1], userInfo[2])
 
         cursor.execute(command)

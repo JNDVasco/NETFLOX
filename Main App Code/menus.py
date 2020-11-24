@@ -198,17 +198,14 @@ def login():
     print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
     # Main Body
-    strToPrint = "Criar conta no NetFLOX"
+    strToPrint = "Login no NetFLOX"
     print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.palegreen1 + strToPrint)
 
-    strToPrint = "Nome utilizador: "
-    username = input(term.move_xy((term.width // 2) - 11, borderY + 7) + term.lightcyan + strToPrint)
-
     strToPrint = "Email: "
-    email = input(term.move_xy((term.width // 2) - 11, borderY + 9) + term.lightcyan + strToPrint)
+    email = getUserInput_Email(strToPrint, 9)
 
     strToPrint = "Password: "
-    password = input(term.move_xy((term.width // 2) - 11, borderY + 11) + term.lightcyan + strToPrint)
+    password = getUserInput_String(strToPrint, 11)
 
     print(term.home + term.on_black + term.clear)
 
@@ -684,9 +681,6 @@ def sendMessageAdmin():
 # Main for test
 if __name__ == '__main__':
     print("==== NetFLOX starting! ====")
-    firstPage()
+    login()
     time.sleep(5)
-    output = newAccount()
-    # Reset when leaving
     print(term.home + term.on_black + term.white + term.clear)
-    print(output)
