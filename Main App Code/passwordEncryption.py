@@ -30,7 +30,27 @@
 #         raise ValueError("Invalid padding...")
 #     return data[:-padding]  # remove the padding
 
+import sys
+
+from passlib.hash import sha256_crypt as crypt
+
+
+def encryptPassword(givenPassword):
+    encrypted_pwd = crypt.hash(givenPassword)
+    return encrypted_pwd
+
+
+def comparePassword(givenPassword, realPassword):
+    retriesCounter = 0
+
+        rslt = crypt.verify(givenPassword, realPassword)
+        print(rslt)
+        if not rslt:
+            count += 1
+        if count == 3:
+            sys.exit("Password errada 3 vezes seguidas!!")
 
 
 if __name__ == '__main__':
-    print("passWord Encryption")
+    print("password Encryption")
+    test()

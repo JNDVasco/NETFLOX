@@ -1,4 +1,4 @@
-#==============================================================
+# ==============================================================
 # Base de Dados - UCoimbra MiEEC 2020/2021
 # Projeto: NETFLOX
 # Gonçalo Cavaleiro - UC2018279569
@@ -15,8 +15,10 @@
 # Error:       tomato
 #
 # print(term.home + term.on_blue + term.clear) Clear Screen
-#==============================================================
+# ==============================================================
 import time
+
+from passlib.hash import sha256_crypt as pwd
 
 from blessed import Terminal
 
@@ -30,11 +32,13 @@ borderY = term.height // 6
 # just a line to clear a specific part
 blankLine = "thisStringJustGetsPrintedInBlackToClearTheLine"
 
+
 # ==== Get User Input ====
 # This funtion get the user input, forces to be an integer
 # Status: Done
-def getUserInput_Integer(str, posY):
+def getUserInput_Integer(str, posY, maxOption):
     errorStr = "Dê-me o número correspondente à opção!"
+    errorStrMaxNumber = "           Opção não disponível           "
 
     posX = ((term.width // 2) - (len(str) // 2))
 
@@ -43,9 +47,16 @@ def getUserInput_Integer(str, posY):
             userInput = int(input(term.move_xy(posX, borderY + posY + 1) + term.lightcyan + str))
         except ValueError:
             print(term.move_xy((term.width // 2) - (len(errorStr) // 2), borderY + posY) + term.tomato + errorStr)
-            print(term.move_xy(posX + 1, borderY + posY + 1) + term.black + blankLine)
+            print(term.move_xy(posX + 1, borderY + posY + 1) + term.clear_eol)
             continue
         else:
+            if userInput > maxOption:
+                print(term.move_xy(0, borderY + posY) + term.clear_eol)
+                print(term.move_xy((term.width // 2) - (len(errorStrMaxNumber) // 2),
+                                   borderY + posY) + term.tomato + errorStrMaxNumber)
+                print(term.move_xy(posX + 1, borderY + posY + 1) + term.clear_eol)
+                continue
+            print(term.move_xy(0, borderY + posY) + term.clear_eol)
             return userInput
 
 
@@ -64,10 +75,11 @@ def getUserInput_Email(str, posY):
         userInput = userInput.strip()  # Remove all spaces at start and end
 
         if userInput.find("@") == -1:
+            print(term.move_xy(0, borderY + posY) + term.clear_eol)
             print(term.move_xy((term.width // 2) - (len(errorStr) // 2), borderY + posY) + term.tomato + errorStr)
-            print(term.move_xy(posX + 1, borderY + posY + 1) + term.black + blankLine)
         else:
             break
+    print(term.move_xy(0, borderY + posY) + term.clear_eol)
     return userInput
 
 
@@ -86,11 +98,12 @@ def getUserInput_String(str, posY):
         userInput = userInput.strip()  # Remove all spaces at start and end
 
         if userInput == "":
+            print(term.move_xy(0, borderY + posY) + term.clear_eol)
             print(term.move_xy((term.width // 2) - (len(errorStr) // 2), borderY + posY) + term.tomato + errorStr)
-            print(term.move_xy(posX + 1, borderY + posY + 1) + term.black + blankLine)
+            print(term.move_xy(posX + 1, borderY + posY + 1) + term.clear_eol)
         else:
             break
-
+    print(term.move_xy(0, borderY + posY) + term.clear_eol)
     return userInput
 
 
@@ -136,14 +149,17 @@ def firstPage():
     strToPrint = "[3] -> Fazer login"
     print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 13) + term.lightcyan + strToPrint)
 
+    strToPrint = "[4] -> Sair do NetFLOX"
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 16) + term.lightcyan + strToPrint)
+
     strToPrint = "Escolha uma das opções a cima: "
-    option = getUserInput_Integer(strToPrint, 15)
+    option = getUserInput_Integer(strToPrint, 19, 4)
 
     return option
 
 
 # Status: notDone
-def newAccount():
+def newAccount(cursor, dbConn):
     # Always clear the screen first
     print(term.home + term.on_black + term.clear)
 
@@ -165,18 +181,40 @@ def newAccount():
     strToPrint = "Criar conta no NetFLOX"
     print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.palegreen1 + strToPrint)
 
-    strToPrint = "Nome utilizador: "
-    username = getUserInput_String(strToPrint, 7)
+    while True:
 
-    strToPrint = "Email: "
-    email = getUserInput_Email(strToPrint, 9)
+        errorStr = "Já existe um utilizador com esse email"
 
-    strToPrint = "Password: "
-    password = getUserInput_String(strToPrint, 11)
+        # Get the data of the user
+        strToPrint = "Nome utilizador: "
+        username = getUserInput_String(strToPrint, 7)
+        strToPrint = "Email: "
+        email = getUserInput_Email(strToPrint, 9)
+        strToPrint = "Password: "
+        password = getUserInput_String(strToPrint, 11)
 
-    print(term.home + term.on_black + term.clear)
+        print(term.home + term.on_black + term.clear)
 
-    return username, email, password
+
+        # ==== Create the account in the database
+
+        password = pwd.hash(password)
+
+        try:
+            query = "INSERT INTO clientes(nome, email, password, is_admin) VALUES ('%s','%s','%s','%s')" % (
+                username, email, password, False)
+            cursor.execute(query)
+            # Importante! Torna as alterações à base de dados persistentes
+            dbConn.commit()
+        except Exception:
+            print(term.move_xy((term.width // 2) - (len(errorStr) // 2), borderY) + term.tomato + errorStr)
+            continue
+        else:
+            query = "INSERT INTO clientes(nome, email, password, is_admin) VALUES ('%s','%s','%s','%s')" % (
+                userInfo[0], userInfo[1], userInfo[2], False)
+            cursor.execute(query)
+            # Importante! Torna as alterações à base de dados persistentes
+            dbConn.commit()
 
 
 def login():

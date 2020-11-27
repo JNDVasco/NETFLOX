@@ -31,37 +31,7 @@ def main():
     option = menu.firstPage()
 
     if option == 2:
-        userInfo = menu.newAccount()
-
-        print("Nome:", userInfo[0])
-        print("Email:", userInfo[1])
-        print("Password:", userInfo[2])
-
-        command = "INSERT INTO cliente(Nome, email, password) VALUES ('%s','%s','%s')" % (
-            userInfo[0], userInfo[1], userInfo[2])
-
-        cursor.execute(command)
-
-        # Importante! Torna as alterações à base de dados persistentes
-        conn.commit()
-
-    # my_password = userInfo[2].encode('UTF-8')
-    # my_data = b"mainString"
-    #
-    # print("key:  {}".format(my_password))
-    # print("data: {}".format(my_data))
-    # encrypted = pwd.encrypt(my_password, my_data)
-    # print("\nenc:  {}".format(encrypted))
-    # decrypted = pwd.decrypt(my_password, encrypted)
-    # print("dec:  {}".format(decrypted))
-    # print("\ndata match: {}".format(my_data == decrypted))
-    # print("\nSecond round....")
-    # encrypted = pwd.encrypt(my_password, my_data)
-    # print("\nenc:  {}".format(encrypted))
-    # decrypted = pwd.decrypt(my_password, encrypted)
-    # print("dec:  {}".format(decrypted))
-    # print("\ndata match: {}".format(my_data == decrypted))
-
+        menu.newAccount(cursor, conn)
     cursor.close()
     conn.close()
 
