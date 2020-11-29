@@ -7,5 +7,11 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://ec2-54-228-250-82.eu-west-1.compute.amazonaws.com:5432/dceboqkca71ddm</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="DVD@localhost" uuid="7b37232a-26d1-40e7-a80d-ee27884cbdf7">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/DVD</jdbc-url>
+    </data-source>
   </component>
 </project>
