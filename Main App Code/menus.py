@@ -17,18 +17,16 @@
 # print(term.home + term.on_blue + term.clear) Clear Screen
 # ==============================================================
 import time
-
+import textwrap
 from blessed import Terminal
 
 # Create the terminal
 term = Terminal()
-
+# Create the text wrapper
+wrapper = textwrap.TextWrapper(width=25)
 # Border, keeps everything a bit more together
 borderX = term.width // 5
 borderY = term.height // 6
-
-# just a line to clear a specific part
-blankLine = "thisStringJustGetsPrintedInBlackToClearTheLine"
 
 
 # ==== Get User Input ====
@@ -314,6 +312,7 @@ def artigoDisponiveisUser(cursor, dbcon):
                             print(term.move_xy((term.width // 2) - 35, borderY + 5) + term.lightcyan + strToPrint)
 
                             strToPrint = "Detalhes:" + details
+                            strToPrint = wrapper.fill(text=strToPrint)
                             print(term.move_xy((term.width // 2) - 35, borderY + 7) + term.lightcyan + strToPrint)
                             exit = True
                         else:
