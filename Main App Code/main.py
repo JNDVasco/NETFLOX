@@ -23,23 +23,26 @@ from passlib.hash import sha256_crypt
 # ==== startUp funtion ====
 # ==== End startUp funtion ====
 
-def main():
-    cursor, conn = db.connectToDB()
+def main(cur, dbConn):
 
-    # Print PostgreSQL version
-    cursor.execute("SELECT version();")
-    record = cursor.fetchone()
-    print("You are connected to - ", record, "\n")
 
-    menu.artigoDisponiveisUser(cursor, conn)
+    # menu.artigoDisponiveisUser(cursor, conn)
+    #
+    menu.firstPage()
 
     print("já sai")
-
-    time.sleep(20)
-
     cursor.close()
     conn.close()
 
 if __name__ == '__main__':
     print("==== NetFLOX starting! ====")
-    main()
+    cursor, conn = db.connectToDB()
+
+    dbStatus = conn.get_dsn_parameters()
+    print(dbStatus['dbname'], "@", dbStatus['host'], sep="")
+
+    for i in range(3):
+        print("Iniciando em {timeLeft}".format(timeLeft = (3 - i)))
+        time.sleep(1)
+
+    main(cursor, conn)
