@@ -16,7 +16,6 @@
 import database as db
 import menus as menu
 import time
-
 from passlib.hash import sha256_crypt
 
 
@@ -25,14 +24,20 @@ from passlib.hash import sha256_crypt
 
 def main(cur, dbConn):
 
+    userOption = menu.firstPage()
 
-    # menu.artigoDisponiveisUser(cursor, conn)
-    #
-    menu.firstPage()
+    if userOption == 1:
+        menu.userLogin()
 
-    print("já sai")
-    cursor.close()
-    conn.close()
+    elif userOption == 2:
+        menu.newAccount()
+
+    elif userOption == 3:
+        menu.adminLogin()
+
+    cur.close()
+    dbConn.close()
+
 
 if __name__ == '__main__':
     print("==== NetFLOX starting! ====")
@@ -41,8 +46,10 @@ if __name__ == '__main__':
     dbStatus = conn.get_dsn_parameters()
     print(dbStatus['dbname'], "@", dbStatus['host'], sep="")
 
-    for i in range(3):
-        print("Iniciando em {timeLeft}".format(timeLeft = (3 - i)))
-        time.sleep(1)
+    time.sleep(1)
 
     main(cursor, conn)
+
+    print("==== FIM ====")
+    time.sleep(2)
+    print("\033c")

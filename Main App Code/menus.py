@@ -33,10 +33,13 @@ borderY = term.height // 6
 # ==== Get User Input ====
 # This funtion get the user input, forces to be an integer
 # Status: Done
-def getUserInput_Integer(str, posY, minOption=0, maxOption=100):
+def getUserInput_Integer(str, posY, maxOption=100, minOption=1):
     str = str + ": "
     errorStr = "Dê-me o número correspondente à opção!"
     invalidOption = "Opção inváilda!"
+
+    print(term.move_xy(0, borderY + posY) + term.black + term.clear_eol)
+    print(term.move_xy(0, borderY + posY + 1) + term.black + term.clear_eol)
 
     posX = ((term.width // 2) - (len(str) // 2))
 
@@ -50,7 +53,6 @@ def getUserInput_Integer(str, posY, minOption=0, maxOption=100):
         else:
             if minOption <= userInput <= maxOption:
                 print(term.move_xy(0, borderY + posY) + term.black + term.clear_eol)
-                print(term.move_xy(0, borderY + posY + 1) + term.black + term.clear_eol)
                 return userInput
             else:
                 print(term.move_xy(0, borderY + posY) + term.black + term.clear_eol)
@@ -67,6 +69,9 @@ def getUserInput_Email(str, posY):
     str = str + ": "
     errorStr = "Dê-me um email válido!"
 
+    print(term.move_xy(0, borderY + posY) + term.black + term.clear_eol)
+    print(term.move_xy(0, borderY + posY + 1) + term.black + term.clear_eol)
+
     posX = ((term.width // 2) - (len(str) // 2))
 
     while True:
@@ -80,7 +85,6 @@ def getUserInput_Email(str, posY):
         else:
             break
     print(term.move_xy(0, borderY + posY) + term.black + term.clear_eol)
-    print(term.move_xy(0, borderY + posY + 1) + term.black + term.clear_eol)
     return userInput
 
 
@@ -92,6 +96,9 @@ def getUserInput_Email(str, posY):
 def getUserInput_String(str, posY):
     str = str + ": "
     errorStr = "Dê-me pelo menos um caracter!"
+
+    print(term.move_xy(0, borderY + posY) + term.black + term.clear_eol)
+    print(term.move_xy(0, borderY + posY + 1) + term.black + term.clear_eol)
 
     posX = ((term.width // 2) - (len(str) // 2))
 
@@ -106,7 +113,6 @@ def getUserInput_String(str, posY):
         else:
             break
     print(term.move_xy(0, borderY + posY) + term.black + term.clear_eol)
-    print(term.move_xy(0, borderY + posY +1) + term.black + term.clear_eol)
     return userInput
 
 
@@ -140,7 +146,7 @@ def clearScreen(menuName):
 
 # ==== First Pages ====
 
-# Status: SemiDone
+# Status: Done
 def firstPage():
     clearScreen("Página Inicial V1")
 
@@ -163,8 +169,8 @@ def firstPage():
     strToPrint = "[3] -> Fazer login"
     print(term.center(term.move_y(borderY + 12) + term.lightcyan + strToPrint))
 
-    strToPrint = "Escolha uma das opções a cima: "
-    option = getUserInput_Integer(strToPrint, 15)
+    strToPrint = "Escolha uma das opções a cima"
+    option = getUserInput_Integer(strToPrint, 15, 3)
 
     return option
 
@@ -175,35 +181,50 @@ def newAccount():
     clearScreen("Nova conta user V1")
     # Main Body
     strToPrint = "Criar conta no NetFLOX"
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.palegreen1 + strToPrint)
+    print(term.center(term.move_y(borderY + 5) + term.palegreen1 + strToPrint))
 
-    strToPrint = "Nome utilizador: "
+    strToPrint = "Nome utilizador"
     username = getUserInput_String(strToPrint, 7)
 
-    strToPrint = "Email: "
+    strToPrint = "Email"
     email = getUserInput_Email(strToPrint, 9)
 
-    strToPrint = "Password: "
+    strToPrint = "Password"
     password = getUserInput_String(strToPrint, 11)
 
-    print(term.home + term.on_black + term.clear)
+    print(term.home + term.on_black + term.white + term.clear)
 
     return username, email, password
 
 
-def login():
-    clearScreen("Login V1")
+def userLogin():
+    clearScreen("User Login V1")
     # Main Body
     strToPrint = "Fazer login no NetFLOX"
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.palegreen1 + strToPrint)
+    print(term.center(term.move_y(borderY + 5) + term.palegreen1 + strToPrint))
 
-    strToPrint = "Nome utilizador: "
-    username = getUserInput_String(strToPrint, 7)
+    strToPrint = "Email"
+    email = getUserInput_Email(strToPrint, 7)
 
-    strToPrint = "Password: "
-    password = getUserInput_String(strToPrint, 11)
+    strToPrint = "Password"
+    password = getUserInput_String(strToPrint, 9)
 
-    print(term.home + term.on_black + term.clear)
+    print(term.home + term.on_black + term.white + term.clear)
+
+
+def adminLogin():
+    clearScreen("Admin Login V1")
+    # Main Body
+    strToPrint = "Fazer login no NetFLOX"
+    print(term.center(term.move_y(borderY + 5) + term.palegreen1 + strToPrint))
+
+    strToPrint = "Email"
+    email = getUserInput_Email(strToPrint, 7)
+
+    strToPrint = "Password"
+    password = getUserInput_String(strToPrint, 9)
+
+    print(term.home + term.on_black + term.white + term.clear)
 
 
 # ==== User Menus ====
@@ -238,12 +259,6 @@ def mainMenuUser(username, balance, unreadMessages):
 
 
 # Status: notDone
-def artigoUser():
-    # Always clear the screen first
-    clearScreen("Menu Inicial User V1")
-
-
-# Status: notDone
 def artigoDisponiveisUser(cursor, dbcon):
     # Always clear the screen first
     clearScreen("Artigos User V1")
@@ -259,7 +274,7 @@ def artigoDisponiveisUser(cursor, dbcon):
     print(term.move_xy((term.width // 2) - 10, borderY + 9) + term.lightcyan + strToPrint)
 
     strToPrint = "Escolha uma das opções a cima: "
-    option = getUserInput_Integer(strToPrint, 12, 1, 2)
+    option = getUserInput_Integer(strToPrint, 12, 2)
 
     if option == 1:
         clearScreen("Artigos User V1")
