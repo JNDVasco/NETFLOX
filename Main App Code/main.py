@@ -8,15 +8,21 @@
 #
 # Descrição:
 #
-#
+# Tipo Erro:
+# "userAlreadyExist"
+# "userNotExist"
+# "userNoPermission"
 # Depêndencias              Versão
 # ==============================================================
 # ==== Import files ====
 
-import database as db
+# import database as db
 import menus as menu
+
 import time
-from passlib.hash import sha256_crypt
+from passlib.hash import sha256_crypt as crypt
+import psycopg2
+import configparser
 
 
 # ==== startUp funtion ====
@@ -24,24 +30,93 @@ from passlib.hash import sha256_crypt
 
 def main(cur, dbConn):
 
-    userOption = menu.firstPage()
+    #Start by login
 
-    if userOption == 1:
-        menu.userLogin()
+# ======================================================================================================================
+def login(cur, dbConn):
+    error = "None"
+    while True:
+        userOption = menu.firstPage(error)
+        error = "None"  # Reset the error code
 
-    elif userOption == 2:
-        menu.newAccount()
+        if userOption == 1:
+            userInfo = menu.userLogin()
 
-    elif userOption == 3:
-        menu.adminLogin()
+            command = "SELECT pessoa_password FROM cliente WHERE pessoa_email = '{userEmail}'".format(
+                userEmail=userInfo[0])
+            cursor.execute(command)
+            data = cursor.fetchone()
 
-    cur.close()
-    dbConn.close()
+            if (cursor.rowcount == 0):
+                error = "userNotExist"
+            else:
+                truePwd, = data
+                loginAccepted = crypt.verify(userInfo[1], truePwd)
+                if not loginAccepted:
+                    error = "wrongPassword"
+
+
+        elif userOption == 2:
+            createdUser = False
+            error = False
+
+            try:
+                userInfo = menu.newAccount()
+
+                encPassword = crypt.hash(userInfo[2])
+
+                command = "INSERT INTO cliente (pessoa_email, pessoa_nome, pessoa_password) VALUES ('{email}','{nome}','{password}')".format(
+                    email=userInfo[1], nome=userInfo[0], password=encPassword)
+
+                cur.execute(command)
+            except psycopg2.errors.UniqueViolation:
+                dbConn.rollback()
+                error = "userAlreadyExist"
+            else:
+                dbConn.commit()
+
+        elif userOption == 3:
+            adminInfo = menu.adminLogin()
+
+            command = "SELECT pessoa_password FROM admin WHERE pessoa_email = '{adminEmail}'".format(
+                adminEmail=adminInfo[0])
+            cursor.execute(command)
+            data = cursor.fetchone()
+
+            if (cursor.rowcount == 0):
+                error = "userNoPermission"
+            else:
+                truePwd, = data
+                loginAccepted = crypt.verify(adminInfo[1], truePwd)
+                if not loginAccepted:
+                    error = "wrongPassword"
+
+
+# ======================================================================================================================
+
+
+def connectToDB():
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
+    configParams = config.items("PostgresDB_Credentials")
+
+    dbParams = {}
+
+    for i in configParams:
+        dbParams[i[0]] = i[1]
+
+    db = psycopg2.connect(**dbParams)
+
+    dbCursor = db.cursor()
+
+    return dbCursor, db
+# ======================================================================================================================
 
 
 if __name__ == '__main__':
     print("==== NetFLOX starting! ====")
-    cursor, conn = db.connectToDB()
+    cursor, conn = connectToDB()
 
     dbStatus = conn.get_dsn_parameters()
     print(dbStatus['dbname'], "@", dbStatus['host'], sep="")
@@ -49,6 +124,9 @@ if __name__ == '__main__':
     time.sleep(1)
 
     main(cursor, conn)
+
+    cursor.close()
+    conn.close()
 
     print("==== FIM ====")
     time.sleep(2)

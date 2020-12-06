@@ -147,12 +147,27 @@ def clearScreen(menuName):
 # ==== First Pages ====
 
 # Status: Done
-def firstPage():
+def firstPage(errorType="None"):
     clearScreen("Página Inicial V1")
+
+    errorStrUserExist = "Já existe um utilizador com esse email, faça login"
+    errorStrUserNotExist = "Não existe nenhum utilizador com esse email, crie uma conta"
+    errorStrNotAdmin = "Não tem permissões, contate o administrador"
+    errorStrWrongPassword = "Palavra passe errada, tente novamente"
 
     # Main Body
     strToPrint = "Bem-vindo ao NetFLOX"
     print(term.center(term.move_y(borderY + 5) + term.palegreen1 + strToPrint))
+
+    if errorType != "None":
+        if errorType == "userAlreadyExist":
+            print(term.center(term.move_y(borderY + 6) + term.tomato + errorStrUserExist))
+        elif errorType == "userNotExist":
+            print(term.center(term.move_y(borderY + 6) + term.tomato + errorStrUserNotExist))
+        elif errorType == "userNoPermission":
+            print(term.center(term.move_y(borderY + 6) + term.tomato + errorStrNotAdmin))
+        elif errorType == "wrongPassword":
+            print(term.center(term.move_y(borderY + 6) + term.tomato + errorStrWrongPassword))
 
     strToPrint = "== Utilizadores =="
     print(term.center(term.move_y(borderY + 7) + term.palegreen1 + strToPrint))
@@ -211,6 +226,8 @@ def userLogin():
 
     print(term.home + term.on_black + term.white + term.clear)
 
+    return email, password
+
 
 def adminLogin():
     clearScreen("Admin Login V1")
@@ -225,6 +242,8 @@ def adminLogin():
     password = getUserInput_String(strToPrint, 9)
 
     print(term.home + term.on_black + term.white + term.clear)
+
+    return email, password
 
 
 # ==== User Menus ====
