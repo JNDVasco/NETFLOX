@@ -29,12 +29,25 @@ import configparser
 # ==== End startUp funtion ====
 
 def main(cur, dbConn):
+    loginStatus = login(cur, dbConn)  # Login first
 
-    #Start by login
+    if loginStatus == "Admin":
+        print("Login como admin")
+    elif loginStatus == "User":
+        print("Login como user")
+    else:
+       print("ERROOOOOO")
+
+
+
 
 # ======================================================================================================================
+
+
 def login(cur, dbConn):
+    print("Login")
     error = "None"
+
     while True:
         userOption = menu.firstPage(error)
         error = "None"  # Reset the error code
@@ -54,6 +67,8 @@ def login(cur, dbConn):
                 loginAccepted = crypt.verify(userInfo[1], truePwd)
                 if not loginAccepted:
                     error = "wrongPassword"
+                elif loginAccepted:
+                    return "User"
 
 
         elif userOption == 2:
@@ -90,6 +105,8 @@ def login(cur, dbConn):
                 loginAccepted = crypt.verify(adminInfo[1], truePwd)
                 if not loginAccepted:
                     error = "wrongPassword"
+                elif loginAccepted:
+                    return "Admin"
 
 
 # ======================================================================================================================
@@ -111,6 +128,8 @@ def connectToDB():
     dbCursor = db.cursor()
 
     return dbCursor, db
+
+
 # ======================================================================================================================
 
 
