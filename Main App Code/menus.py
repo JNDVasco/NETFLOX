@@ -292,7 +292,7 @@ def mainMenuUser(username, balance, unreadMessages):
     strToPrint = "Escolha uma das opções a cima"
     option = getUserInput_Integer(strToPrint, 17, 5)
 
-    return option
+    return option   
 
 
 # Status: notDone

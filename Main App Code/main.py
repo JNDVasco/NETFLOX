@@ -65,25 +65,22 @@ def main(cur, dbConn):
                     userOption = menu.mainMenuUser(userData[0], userData[1], unreadMsgs)
 
                     if userOption == 1:
-                        loggedIn = False
+
 
                     elif userOption == 2:
-                        loggedIn = False
+
 
 
                     elif userOption == 3:
-                        loggedIn = False
+
 
 
                     elif userOption == 4:
-                        loggedIn = False
+
 
 
                     elif userOption == 5:
                         loggedIn = False
-
-
-
 
                 else:
                     print("ERROOOOOOUUUUUUUUUU")
