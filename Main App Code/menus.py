@@ -139,11 +139,15 @@ def clearScreen(menuName):
     strToPrint = "JNDVasco"
     print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
+# ==== Reset terminal ====
+# This funtion resets the terminal
+# Status: Done
+def resetTerminal():
+    print(term.home + term.on_black + term.clear + term.white)
 
 # ======================================================================================================================
 # ============= Main Functions =========================================================================================
 # ======================================================================================================================
-
 # ==== First Pages ====
 
 # Status: Done
@@ -184,8 +188,14 @@ def firstPage(errorType="None"):
     strToPrint = "[3] -> Fazer login"
     print(term.center(term.move_y(borderY + 12) + term.lightcyan + strToPrint))
 
+    strToPrint = "== Sair =="
+    print(term.center(term.move_y(borderY + 14) + term.palegreen1 + strToPrint))
+
+    strToPrint = "[4] -> Sair do NetFLOX"
+    print(term.center(term.move_y(borderY + 15) + term.lightcyan + strToPrint))
+
     strToPrint = "Escolha uma das opções a cima"
-    option = getUserInput_Integer(strToPrint, 15, 3)
+    option = getUserInput_Integer(strToPrint, 18, 4)
 
     return option
 
@@ -232,7 +242,7 @@ def userLogin():
 def adminLogin():
     clearScreen("Admin Login V1")
     # Main Body
-    strToPrint = "Fazer login no NetFLOX"
+    strToPrint = "Fazer login no NetFLOX como Administrador"
     print(term.center(term.move_y(borderY + 5) + term.palegreen1 + strToPrint))
 
     strToPrint = "Email"
@@ -262,19 +272,27 @@ def mainMenuUser(username, balance, unreadMessages):
 
     # Menus
     strToPrint = "Escolha a opção pretendida"
-    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 5) + term.palegreen1 + strToPrint)
+    print(term.center(term.move_y(borderY + 6) + term.palegreen1 + strToPrint))
 
     strToPrint = "[1] -> Ver artigos"
-    print(term.move_xy((term.width // 2) - 10, borderY + 8) + term.lightcyan + strToPrint)
+    print(term.move_xy((term.width // 2) - 15, borderY + 9) + term.lightcyan + strToPrint)
 
     strToPrint = "[2] -> Artigos atuais"
-    print(term.move_xy((term.width // 2) - 10, borderY + 9) + term.lightcyan + strToPrint)
+    print(term.move_xy((term.width // 2) - 15, borderY + 10) + term.lightcyan + strToPrint)
 
     strToPrint = "[3] -> Histórico e Estatísticas"
-    print(term.move_xy((term.width // 2) - 10, borderY + 12) + term.lightcyan + strToPrint)
+    print(term.move_xy((term.width // 2) - 15, borderY + 11) + term.lightcyan + strToPrint)
 
     strToPrint = "[4] -> Caixa de Entrada (" + str(unreadMessages) + ")"
-    print(term.move_xy((term.width // 2) - 10, borderY + 15) + term.lightcyan + strToPrint)
+    print(term.move_xy((term.width // 2) - 15, borderY + 12) + term.lightcyan + strToPrint)
+
+    strToPrint = "[5] -> Logout"
+    print(term.move_xy((term.width // 2) - 15, borderY + 14) + term.lightcyan + strToPrint)
+
+    strToPrint = "Escolha uma das opções a cima"
+    option = getUserInput_Integer(strToPrint, 17, 5)
+
+    return option
 
 
 # Status: notDone

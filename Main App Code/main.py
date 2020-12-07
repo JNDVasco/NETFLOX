@@ -24,28 +24,78 @@ from passlib.hash import sha256_crypt as crypt
 import psycopg2
 import configparser
 
-
 # ==== startUp funtion ====
 # ==== End startUp funtion ====
 
 def main(cur, dbConn):
-    loginStatus = login(cur, dbConn)  # Login first
 
-    if loginStatus == "Admin":
-        print("Login como admin")
-    elif loginStatus == "User":
-        print("Login como user")
-    else:
-       print("ERROOOOOO")
+    global userID
+    loginData = []
+
+    while True:
+        loginData = login(cur, dbConn)  # Login first
+
+        if(loginData[0] != "Exit"): # Contains the user type and the Id
+            loginStatus = loginData[0]
+            userID = loginData[1]
+
+            loggedIn = True
+
+            while loggedIn:
+                # =========== ADMIN ===========
+                if loginStatus == "Admin":
+                    print("Login como admin")
+                # =========== USER ===========
+                elif loginStatus == "User":
+
+                    command = "SELECT count(id_msg) FROM mensagem WHERE mensagem_lida = false"
+                    cursor.execute(command)
+                    unreadMsgs = cursor.fetchone()
+
+                    if (cursor.rowcount == 0):
+                        unreadMsgs = 0
+                    else:
+                        unreadMsgs, = unreadMsgs
+
+                    command = "SELECT pessoa_nome, saldo FROM cliente WHERE pessoa_email = '{userEmail}'".format(
+                        userEmail=userID)
+                    cursor.execute(command)
+                    userData = cursor.fetchone()  # Using , should be ok since the user exists (i.e made the login)
+
+                    userOption = menu.mainMenuUser(userData[0], userData[1], unreadMsgs)
+
+                    if userOption == 1:
+                        loggedIn = False
+
+                    elif userOption == 2:
+                        loggedIn = False
 
 
+                    elif userOption == 3:
+                        loggedIn = False
+
+
+                    elif userOption == 4:
+                        loggedIn = False
+
+
+                    elif userOption == 5:
+                        loggedIn = False
+
+
+
+
+                else:
+                    print("ERROOOOOOUUUUUUUUUU")
+        else:
+            print("Saindo!")
+            return
 
 
 # ======================================================================================================================
 
 
 def login(cur, dbConn):
-    print("Login")
     error = "None"
 
     while True:
@@ -68,7 +118,7 @@ def login(cur, dbConn):
                 if not loginAccepted:
                     error = "wrongPassword"
                 elif loginAccepted:
-                    return "User"
+                    return "User", userInfo[0]
 
 
         elif userOption == 2:
@@ -106,7 +156,10 @@ def login(cur, dbConn):
                 if not loginAccepted:
                     error = "wrongPassword"
                 elif loginAccepted:
-                    return "Admin"
+                    return "Admin", adminInfo[0]
+
+        elif userOption == 4:
+            return "Exit",
 
 
 # ======================================================================================================================
@@ -147,6 +200,8 @@ if __name__ == '__main__':
     cursor.close()
     conn.close()
 
+    menu.resetTerminal()
+
     print("==== FIM ====")
-    time.sleep(2)
+    time.sleep(10)
     print("\033c")
