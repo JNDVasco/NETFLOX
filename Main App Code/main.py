@@ -66,18 +66,22 @@ def main(cur, dbConn):
 
                     if userOption == 1:
 
+                        userOption = menu.verArtigosUser(cur, dbConn)
+
+                        if userOption == 2:
+                            menu.pesquisarArtigosUser(cur, dbConn)
+
+                        elif userOption == 5:
+                            break
 
                     elif userOption == 2:
-
-
+                        loggedIn = False
 
                     elif userOption == 3:
-
-
+                        loggedIn = False
 
                     elif userOption == 4:
-
-
+                        loggedIn = False
 
                     elif userOption == 5:
                         loggedIn = False
