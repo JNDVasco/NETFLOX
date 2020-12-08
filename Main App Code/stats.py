@@ -131,14 +131,12 @@ SELECT ID_Art, Preco, Tempo_para_ver FROM artigos WHERE id_art = {id}".format(id
 
     cursor.fetchone()
 
-# FUNÇÃO POR ADICIONAR A ESTATISTICA
+# Saldo total clientes
 
+    INSERT INTO Estatistica (Saldo_Total_Clientes)
+    VALUES(sum(Cliente.Saldo))
 
-
-
-
-
-
+    cursor.fetchone
 
 
 
