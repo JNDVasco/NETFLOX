@@ -326,8 +326,6 @@ def verArtigosUser():
 
 def pesquisarArtigosUser(cursor, dbcon):
 
-    searchType = "None"
-
     # Always clear the screen first
     clearScreen("Pesquisa de Artigos User V1")
     # Main Body
@@ -351,8 +349,18 @@ def pesquisarArtigosUser(cursor, dbcon):
     print(term.move_xy((term.width // 2) - 15, borderY + 14) + term.lightcyan + strToPrint)
 
     strToPrint = "Escolha uma das opções a cima"
-
     option = getUserInput_Integer(strToPrint, 17, 5)
+
+    if option == 1:
+        searchType = "Title"
+    elif option == 2:
+        searchType = "Actor"
+    elif option == 3:
+        searchType = "Director"
+    elif option == 4:
+        searchType = "Producer"
+    elif option == 5:
+        return
 
 
 def artigoDisponiveisUser(cursor, dbcon):

@@ -66,7 +66,7 @@ def main(cur, dbConn):
 
                     if userOption == 1:
 
-                        userOption = menu.verArtigosUser(cur, dbConn)
+                        userOption = menu.verArtigosUser()
 
                         if userOption == 2:
                             menu.pesquisarArtigosUser(cur, dbConn)
