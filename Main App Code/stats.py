@@ -1,6 +1,8 @@
 import configparser
 import time
+
 import psycopg2
+
 
 def main(cur, dbConn):
     print("Faz as coisas aqui, cur  é o cursor, dbConn é a conexão à base de dados")

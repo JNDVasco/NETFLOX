@@ -48,7 +48,7 @@ def main(cur, dbConn):
                 # =========== USER ===========
                 elif loginStatus == "User":
 
-                    command = "SELECT count(id_msg) FROM mensagem WHERE mensagem_lida = false"
+                    command = "SELECT count(id_msg) FROM mensagem WHERE mensagens_n_lidas = false"
                     cursor.execute(command)
                     unreadMsgs = cursor.fetchone()
 
@@ -64,26 +64,36 @@ def main(cur, dbConn):
 
                     userOption = menu.mainMenuUser(userData[0], userData[1], unreadMsgs)
 
-                    if userOption == 1:
+                    if userOption == 1: # Ver artigos
+                        while True:
+                            userOptionVerArtigos = menu.verArtigosUser()
 
-                        userOption = menu.verArtigosUser()
+                            if userOptionVerArtigos == 1: # Ver disponiveis
+                                break
+                            elif userOptionVerArtigos == 2: # Pesquisa
+                                while True:
+                                    userOptionVerArtigos = menu.pesquisarArtigosUser(cur, dbConn)
+                                    if userOptionVerArtigos == 5:
+                                        break
+                                    else:
+                                        print(userOptionVerArtigos)
+                            elif userOptionVerArtigos == 3: # Alugar
+                                break
+                            elif userOptionVerArtigos == 4:
+                                break
+                            elif userOptionVerArtigos == 5:
+                                break
 
-                        if userOption == 2:
-                            menu.pesquisarArtigosUser(cur, dbConn)
-
-                        elif userOption == 5:
-                            break
-
-                    elif userOption == 2:
+                    elif userOption == 2: # Artigos Atuais
                         loggedIn = False
 
-                    elif userOption == 3:
+                    elif userOption == 3: # Historico e estatisticas
                         loggedIn = False
 
-                    elif userOption == 4:
+                    elif userOption == 4: # Caixa de entrada
                         loggedIn = False
 
-                    elif userOption == 5:
+                    elif userOption == 5: #Logout
                         loggedIn = False
 
                 else:

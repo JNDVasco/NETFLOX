@@ -24,7 +24,7 @@ from blessed import Terminal
 # Create the terminal
 term = Terminal()
 # Create the text wrapper
-wrapper = textwrap.TextWrapper(width=25)
+wrapper = textwrap.TextWrapper(width=50)
 # Border, keeps everything a bit more together
 borderX = term.width // 5
 borderY = term.height // 6
@@ -139,11 +139,21 @@ def clearScreen(menuName):
     strToPrint = "JNDVasco"
     print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
+
+# ==== Clear lines ====
+# This funtion clears a range of lines
+# Status: Done
+def clearLines(start, end):
+    for i in range(start, end):
+        print(term.move_xy(0, borderY + i) + term.black + term.clear_eol)
+
+
 # ==== Reset terminal ====
 # This funtion resets the terminal
 # Status: Done
 def resetTerminal():
     print(term.home + term.on_black + term.clear + term.white)
+
 
 # ======================================================================================================================
 # ============= Main Functions =========================================================================================
@@ -323,14 +333,15 @@ def verArtigosUser():
 
     option = getUserInput_Integer(strToPrint, 17, 5)
 
+    return option
+
 
 def pesquisarArtigosUser(cursor, dbcon):
-
     # Always clear the screen first
     clearScreen("Pesquisa de Artigos User V1")
     # Main Body
 
-    strToPrint = "Escolha a forma de peesquisa pretendida"
+    strToPrint = "Escolha a forma de pesquisa pretendida"
     print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 6) + term.palegreen1 + strToPrint)
 
     strToPrint = "[1] -> Título"
@@ -352,15 +363,92 @@ def pesquisarArtigosUser(cursor, dbcon):
     option = getUserInput_Integer(strToPrint, 17, 5)
 
     if option == 1:
-        searchType = "Title"
-    elif option == 2:
-        searchType = "Actor"
-    elif option == 3:
-        searchType = "Director"
+        searchType = "Título"
+        clearScreen("Pesquisa de Artigos User V1")
+
+        strToPrint = "Pesquisa por " + searchType
+        print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 6) + term.palegreen1 + strToPrint)
+
+        strToPrint = "Termo de Pesquisa"
+        searchTerm = getUserInput_String(strToPrint, 8)
+
+        clearScreen("Pesquisa de Artigos User V1")
+
+        # ILIKE online works in Postgres but is case insensitive
+        command = "SELECT titulo, tipo, preco, id_art FROM artigos WHERE titulo ILIKE '%{term}%'".format(
+            term=searchTerm)
+
+        cursor.execute(command)
+        data = cursor.fetchall()  # [0]>titulo, [1]>tipo, [2]>preco, [3]>id_art
+        resultAmount = cursor.rowcount
+
+        strToPrint = "Pesquisa por [ " + searchTerm + " ] deu " + str(resultAmount) + " resultados"
+        print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+
+        limit = 5
+        linha = 0
+        show = True
+
+        if(resultAmount > 0):
+            for i in range(resultAmount):
+                if show:
+                    strToPrint = "[" + str(i + 1) + "] -> " + str(data[i][1]) + ": " + str(data[i][0]) + "  Preço:" + str(
+                        int(data[i][2]) / 100) + "€"
+                    print(term.move_xy((term.width // 2) - 30, borderY + 8 + linha) + term.lightcyan + strToPrint)
+
+                    linha += 1
+
+                    if linha >= limit:
+                        strToPrint = "Quer mais? (Sim/Não)"
+                        out = getUserInput_String(strToPrint, 16)
+                        out = out.lower()
+                        if out == "sim" or out == "s":
+                            clearLines(8, 8 + linha)
+                            linha = 0
+                        else:
+                            show = False
+            strToPrint = "Escolha o artigo"
+            artigo = getUserInput_Integer(strToPrint, 16)
+
+            idArtigo = data[artigo - 1][3]
+
+            mostrarArtigo(cursor, dbcon, idArtigo)
+
+            strToPrint = "Escreva algo para sair"
+            getUserInput_String(strToPrint, 16)
+        else:
+            strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
+            print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+            strToPrint = "Escreva algo para sair"
+            getUserInput_String(strToPrint, 16)
     elif option == 4:
         searchType = "Producer"
     elif option == 5:
-        return
+        return 5
+
+
+def mostrarArtigo(cursor, dbCon, id):
+    clearScreen("Mostrar Artigo User V1")
+
+    command = "SELECT tipo, titulo, preco, tempo_para_ver, detalhes FROM artigos WHERE id_art ={id}".format(id=id)
+    cursor.execute(command)
+    data = cursor.fetchone() # [0]>tipo, [1]>titulo, [2]>preco, [3]>tempo_para_ver, [4]>detalhes
+
+    textToWrap = data[4]
+
+    txt = wrapper.wrap(text=textToWrap)
+
+    strToPrint = str(data[0]) + ": " + str(data[1])
+    print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+
+    strToPrint = str(data[3]) + " semanas por " + str(data[2]/100) + "€"
+    print(term.center(term.move_y(borderY + 7) + term.lightcyan + strToPrint))
+
+    strToPrint = "== Detalhes =="
+    print(term.center(term.move_y(borderY + 9) + term.palegreen1 + strToPrint))
+
+    for i in range(len(txt)):
+        print(term.center(term.move_y(borderY + 10 + i) + term.lightcyan + str(txt[i])))
 
 
 def artigoDisponiveisUser(cursor, dbcon):
