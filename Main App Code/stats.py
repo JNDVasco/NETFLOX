@@ -142,6 +142,14 @@ SELECT ID_Art, Preco, Tempo_para_ver FROM artigos WHERE id_art = {id}".format(id
 
 
 
+
+# ver tabela estatistica
+
+    SELECT * FROM Estatistica
+
+    cursor.fetchall()
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 #aumenta saldo
 
@@ -170,7 +178,15 @@ SELECT ID_Art, Preco, Tempo_para_ver FROM artigos WHERE id_art = {id}".format(id
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+#Adicionar artigo
 
+    INSERT INTO Artigos (ID_Art, Tipo, Titulo, Preco, Tempo_Para_Ver, Detalhes)
 
+    #id em serial
+    tipoArt= input("tipo de artigo: ")
+    tituloArt= input("titulo do artigo: ")
+    precoArt= input("Preço do artigo: ")
+    TempoArt= input("tempo para ver artigo: ")
+    DetalhesArt= input("detalhes do artigo: ")
 
-
+    VALUES (SERIAL, tipoArt, tituloArt, precoArt, TempoArt, DetalhesArt)
