@@ -202,6 +202,7 @@ if __name__ == '__main__':
     cursor, conn = connectToDB()
 
     dbStatus = conn.get_dsn_parameters()
+
     print(dbStatus['dbname'], "@", dbStatus['host'], sep="")
 
     time.sleep(1)
