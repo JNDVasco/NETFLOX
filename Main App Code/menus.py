@@ -20,6 +20,7 @@ import datetime
 import textwrap
 import time
 
+import psycopg2
 from blessed import Terminal
 
 # Create the terminal
@@ -122,7 +123,7 @@ def getUserInput_String(str, posY):
 # At the screen borders
 # Recieves the menu name to print
 # Status: Done
-def clearScreen(menuName):
+def clearScreen(menuName, username="None"):
     # Always clear the screen first
     print(term.home + term.on_black + term.clear)
 
@@ -140,6 +141,9 @@ def clearScreen(menuName):
     strToPrint = "JNDVasco"
     print(term.move_xy(term.width - (borderX + len(strToPrint)), term.height - borderY) + term.palegreen1 + strToPrint)
 
+    if username != "None":
+        strToPrint = "Bem-vindo, " + username + "."
+        print(term.move_xy(borderX, borderY + 2) + term.lightcyan + strToPrint)
 
 # ==== Clear lines ====
 # This funtion clears a range of lines
@@ -269,19 +273,15 @@ def adminLogin():
 
 # ==== User Menus ====
 
-# ==== Clear the Screen ====
-# This funtion clears the screen keeping only some info
-# At the screen borders
-# Recieves the menu name to print
+# ==== User Main Menu ====
+# This funtion has the main options the user needs
+# recieves the username, balance and unread messages
 # Status: Done
 def mainMenuUser(username, balance, unreadMessages):
-    clearScreen("Menu Inicial User V1")
+    clearScreen("Menu Inicial User V1", username=username)
 
     # Main Body
     # User info
-    strToPrint = "Bem-vindo, " + username + "."
-    print(term.move_xy(borderX, borderY + 2) + term.lightcyan + strToPrint)
-
     strToPrint = "Saldo disponível: " + str(balance / 100) + "€"
     print(term.move_xy(borderX, borderY + 3) + term.lightcyan + strToPrint)
 
@@ -310,14 +310,12 @@ def mainMenuUser(username, balance, unreadMessages):
     return option
 
 
-# ==== Clear the Screen ====
-# This funtion clears the screen keeping only some info
-# At the screen borders
-# Recieves the menu name to print
+# ==== Ver artigos ====
+# This funtion shows the movies to the user
 # Status: Done
-def verArtigosUser():
+def verArtigosUser(username):
     # Always clear the screen first
-    clearScreen("Artigos User V3")
+    clearScreen("Artigos User V3", username=username)
     # Main Body
 
     strToPrint = "Escolha a opção pretendida"
@@ -338,14 +336,616 @@ def verArtigosUser():
 
     return option
 
-# ==== Clear the Screen ====
-# This funtion clears the screen keeping only some info
-# At the screen borders
-# Recieves the menu name to print
+
+# ==== Listar artigos ====
+# This funtion lists all the items available
+# Recieves a database cursor a database conection and the user id idUser
+# Status: Done
+def listarArtigosUser(cursor, dbcon, idUser):
+    # Always clear the screen first
+    command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser,))
+    username, = cursor.fetchone()
+    clearScreen("Listar Artigos User V1", username=username)
+    # Main Body
+
+    command = "SELECT titulo, tipo, preco, id_art FROM artigos"
+    cursor.execute(command)
+    data = cursor.fetchall()  # [0]>titulo, [1]>tipo, [2]>preco, [3]>id_art
+    resultAmount = cursor.rowcount
+
+    strToPrint = "Temos " + str(resultAmount) + " artigos disponíveis para alugar"
+    print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+
+    limit = 5
+    linha = 0
+    show = True
+
+    if (resultAmount > 0):
+        for i in range(resultAmount):
+            if show:
+                strToPrint = "[" + str(i + 1) + "] -> " + str(data[i][1]) + ": " + str(data[i][0])
+                print(term.move_xy((term.width // 2) - 30, borderY + 8 + (linha)) + term.lightcyan + strToPrint)
+
+                strToPrint = "Preço: {:.2f}€".format(int(data[i][2]) / 100)
+                print(term.move_xy(term.width - (borderX + 24), borderY + 8 + linha) + term.lightcyan + strToPrint)
+                linha += 1
+
+                if (linha >= limit) and (i != (resultAmount - 1)):
+                    strToPrint = "Quer mais? (Sim/Não)"
+                    out = getUserInput_String(strToPrint, 16)
+                    out = out.lower()
+                    if out == "sim" or out == "s":
+                        clearLines(8, 8 + linha)
+                        linha = 0
+                    else:
+                        show = False
+        strToPrint = "Escolha o artigo (Sair -> 0)"
+        artigo = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+
+        if artigo != 0:
+            idArtigo = data[artigo - 1][3]
+
+            mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+
+    else:  # Nothing to show just get out
+        strToPrint = "Não há artigos disponíveis."
+        print(term.center(term.move_y(borderY + 6) + term.tomato + strToPrint))
+        strToPrint = "Escreva algo para sair"
+        getUserInput_String(strToPrint, 16)
+
+    return
+
+
+# ==== Pesquisa de artigos ====
+# This funtion allows the user to make a custom search
+# Recieves a database cursor a database conection and the user id idUser
 # Status: Done
 def pesquisarArtigosUser(cursor, dbcon, idUser):
     # Always clear the screen first
-    clearScreen("Pesquisa de Artigos User V1")
+    command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser,))
+    username, = cursor.fetchone()
+    clearScreen("Pesquisa de Artigos User V1", username=username)
+    # Main Body
+
+    strToPrint = "Escolha a forma de pesquisa pretendida"
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 6) + term.palegreen1 + strToPrint)
+
+    strToPrint = "[1] -> Título"
+    print(term.move_xy((term.width // 2) - 15, borderY + 9) + term.lightcyan + strToPrint)
+
+    strToPrint = "[2] -> Ator"
+    print(term.move_xy((term.width // 2) - 15, borderY + 10) + term.lightcyan + strToPrint)
+
+    strToPrint = "[3] -> Realizador"
+    print(term.move_xy((term.width // 2) - 15, borderY + 11) + term.lightcyan + strToPrint)
+
+    strToPrint = "[4] -> Produtor"
+    print(term.move_xy((term.width // 2) - 15, borderY + 12) + term.lightcyan + strToPrint)
+
+    strToPrint = "[5] -> Menu Anterior"
+    print(term.move_xy((term.width // 2) - 15, borderY + 14) + term.lightcyan + strToPrint)
+
+    strToPrint = "Escolha uma das opções a cima"
+    option = getUserInput_Integer(strToPrint, 17, 5)
+
+    if option == 1:
+        searchType = "Título"
+        clearScreen("Pesquisa de Artigos User V1")
+
+        strToPrint = "Pesquisa por " + searchType
+        print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 6) + term.palegreen1 + strToPrint)
+
+        strToPrint = "Termo de Pesquisa"
+        searchTerm = getUserInput_String(strToPrint, 8)
+
+        strToPrint = "Quer ordenar? (Sim/Não)"
+        out = getUserInput_String(strToPrint, 16)
+        out = out.lower()
+
+        if out == "sim" or out == "s":
+            strToPrint = "Dê-me a ordem desejada (ASC/DESC)"
+            out = getUserInput_String(strToPrint, 16)
+            out = out.lower()
+            if out == "desc" or out == "d":
+                ordem = "ASC"
+            else:
+                ordem = "DESC"
+        else:  # order anyway but don't tell the user
+            ordem = "ASC"
+
+        clearScreen("Pesquisa de Artigos User Titulo V1")
+
+        # ILIKE online works in Postgres but is case insensitive
+        command = "SELECT titulo, tipo, preco, id_art FROM artigos WHERE titulo ILIKE %s " \
+                  "ORDER BY titulo {order}".format(order=ordem)  # Order is code defined, no way to alter it so
+
+        searchTermAll = "%" + searchTerm + "%"  # Find all with search term
+
+        cursor.execute(command, (searchTermAll,))
+        data = cursor.fetchall()  # [0]>titulo, [1]>tipo, [2]>preco, [3]>id_art
+        resultAmount = cursor.rowcount
+
+        strToPrint = "Pesquisa por [ " + searchTerm + " ] deu " + str(resultAmount) + " resultados"
+        print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+
+        limit = 5
+        linha = 0
+        show = True
+
+        if (resultAmount > 0):
+            for i in range(resultAmount):
+                if show:
+                    strToPrint = "[" + str(i + 1) + "] -> " + str(data[i][1]) + ": " + str(data[i][0])
+                    print(term.move_xy((term.width // 2) - 30, borderY + 8 + (linha)) + term.lightcyan + strToPrint)
+
+                    strToPrint = "Preço: {:.2f}€".format(int(data[i][2]) / 100)
+                    print(term.move_xy(term.width - (borderX + 24), borderY + 8 + linha) + term.lightcyan + strToPrint)
+                    linha += 1
+
+                    if (linha >= limit) and (i != (resultAmount - 1)):
+                        strToPrint = "Quer mais? (Sim/Não)"
+                        out = getUserInput_String(strToPrint, 16)
+                        out = out.lower()
+                        if out == "sim" or out == "s":
+                            clearLines(8, 8 + linha)
+                            linha = 0
+                        else:
+                            show = False
+            strToPrint = "Escolha o artigo (Sair -> 0)"
+            artigo = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+
+            if artigo != 0:
+                idArtigo = data[artigo - 1][3]
+
+                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+
+        else:  # Nothing to show just get out
+            strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
+            print(term.center(term.move_y(borderY + 6) + term.tomato + strToPrint))
+            strToPrint = "Escreva algo para sair"
+            getUserInput_String(strToPrint, 16)
+
+    elif option == 2:
+        searchType = "Atores"
+        clearScreen("Pesquisa de Artigos User V1")
+
+        strToPrint = "Pesquisa por " + searchType
+        print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 6) + term.palegreen1 + strToPrint)
+
+        strToPrint = "Termo de Pesquisa"
+        searchTerm = getUserInput_String(strToPrint, 8)
+
+        clearScreen("Pesquisa de Artigos User Atores V1")
+
+        strToPrint = "Quer ordenar? (Sim/Não)"
+        out = getUserInput_String(strToPrint, 16)
+        out = out.lower()
+
+        if out == "sim" or out == "s":
+            strToPrint = "Dê-me a ordem desejada (ASC/DESC)"
+            out = getUserInput_String(strToPrint, 16)
+            out = out.lower()
+            if out == "desc" or out == "d":
+                ordem = "ASC"
+            else:
+                ordem = "DESC"
+        else:  # order anyway but don't tell the user
+            ordem = "ASC"
+
+        # ILIKE online works in Postgres but is case insensitive
+        command = "SELECT id_ator, primeiro_nome, segundo_nome FROM atores WHERE primeiro_nome ILIKE %s" \
+                  "OR segundo_nome ILIKE %s" \
+                  "ORDER BY primeiro_nome {order}".format(order=ordem)
+
+        searchTermAll = "%" + searchTerm + "%"  # Find all with search term
+
+        cursor.execute(command, (searchTermAll, searchTermAll))
+        data = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome
+        resultAmount = cursor.rowcount
+
+        strToPrint = "Pesquisa por [ " + searchTerm + " ] deu " + str(resultAmount) + " resultados"
+        print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+
+        limit = 5
+        linha = 0
+        show = True
+
+        if (resultAmount > 0):
+            for i in range(resultAmount):
+                if show:
+                    strToPrint = "[" + str(i + 1) + "] -> " + str(data[i][1]) + " " + str(data[i][2])
+                    print(term.move_xy((term.width // 2) - 25, borderY + 8 + (linha)) + term.lightcyan + strToPrint)
+
+                    linha += 1
+
+                    if (linha >= limit) and (i != (resultAmount - 1)):
+                        strToPrint = "Quer mais? (Sim/Não)"
+                        out = getUserInput_String(strToPrint, 16)
+                        out = out.lower()
+                        if out == "sim" or out == "s":
+                            clearLines(8, 8 + linha)
+                            linha = 0
+                        else:
+                            show = False
+            strToPrint = "Escolha o ator (Sair -> 0)"
+            ator = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+
+            clearLines(8, 13)
+
+            if ator != 0:
+                idAtor = data[ator - 1][0]
+
+                print(idAtor)
+
+                # Retirar artigos onde o ator participa
+                command = "SELECT DISTINCT id_art, tipo, titulo, preco FROM artigos art, artigos_atores aa, atores act " \
+                          "WHERE art.id_art = aa.artigos_id_art AND aa.atores_id_ator = act.id_ator " \
+                          "AND act.id_ator = %s"
+
+                cursor.execute(command, (idAtor,))
+                atorFilmes = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome, [3]>preco
+
+                resultAmount = cursor.rowcount
+
+                linha = 0
+                show = True
+
+                if (resultAmount > 0):
+                    for i in range(resultAmount):
+                        if show:
+                            strToPrint = "[" + str(i + 1) + "] -> " + str(atorFilmes[i][1]) + " " + str(
+                                atorFilmes[i][2])
+                            print(term.move_xy((term.width // 2) - 25,
+                                               borderY + 8 + (linha)) + term.lightcyan + strToPrint)
+
+                            strToPrint = "Preço: {:.2f}€".format(int(atorFilmes[i][3]) / 100)
+                            print(term.move_xy(term.width - (borderX + 24),
+                                               borderY + 8 + linha) + term.lightcyan + strToPrint)
+                            linha += 1
+
+                            if (linha >= limit) and (i != (resultAmount - 1)):
+                                strToPrint = "Quer mais? (Sim/Não)"
+                                out = getUserInput_String(strToPrint, 16)
+                                out = out.lower()
+                                if out == "sim" or out == "s":
+                                    clearLines(8, 8 + linha)
+                                    linha = 0
+                                else:
+                                    show = False
+                    strToPrint = "Escolha o filme (Sair -> 0)"
+                    artigo = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+
+                idArtigo = atorFilmes[artigo - 1][0]
+
+                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+
+        else:  # Nothing to show just get out
+            strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
+            print(term.center(term.move_y(borderY + 6) + term.tomato + strToPrint))
+            strToPrint = "Escreva algo para sair"
+            getUserInput_String(strToPrint, 16)
+
+    elif option == 3:
+        searchType = "Realizador"
+        clearScreen("Pesquisa de Artigos User V1")
+
+        strToPrint = "Pesquisa por " + searchType
+        print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 6) + term.palegreen1 + strToPrint)
+
+        strToPrint = "Termo de Pesquisa"
+        searchTerm = getUserInput_String(strToPrint, 8)
+
+        clearScreen("Pesquisa de Artigos User Realizador V1")
+
+        strToPrint = "Quer ordenar? (Sim/Não)"
+        out = getUserInput_String(strToPrint, 16)
+        out = out.lower()
+
+        if out == "sim" or out == "s":
+            strToPrint = "Dê-me a ordem desejada (ASC/DESC)"
+            out = getUserInput_String(strToPrint, 16)
+            out = out.lower()
+            if out == "desc" or out == "d":
+                ordem = "ASC"
+            else:
+                ordem = "DESC"
+        else:  # order anyway but don't tell the user
+            ordem = "ASC"
+
+        # ILIKE online works in Postgres but is case insensitive
+        command = "SELECT id_produtor, primeiro_nome, segundo_nome FROM produtor WHERE primeiro_nome ILIKE %s" \
+                  "OR segundo_nome ILIKE %s" \
+                  "ORDER BY primeiro_nome {order}".format(order=ordem)  # Order is code defined, no way to alter it so
+
+        searchTermAll = "%" + searchTerm + "%"  # Find all with search term
+
+        cursor.execute(command, (searchTermAll, searchTermAll))
+        data = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome
+        resultAmount = cursor.rowcount
+
+        strToPrint = "Pesquisa por [ " + searchTerm + " ] deu " + str(resultAmount) + " resultados"
+        print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+
+        limit = 5
+        linha = 0
+        show = True
+
+        if (resultAmount > 0):
+            for i in range(resultAmount):
+                if show:
+                    strToPrint = "[" + str(i + 1) + "] -> " + str(data[i][1]) + " " + str(data[i][2])
+                    print(term.move_xy((term.width // 2) - 25, borderY + 8 + (linha)) + term.lightcyan + strToPrint)
+
+                    linha += 1
+
+                    if (linha >= limit) and (i != (resultAmount - 1)):
+                        strToPrint = "Quer mais? (Sim/Não)"
+                        out = getUserInput_String(strToPrint, 16)
+                        out = out.lower()
+                        if out == "sim" or out == "s":
+                            clearLines(8, 8 + linha)
+                            linha = 0
+                        else:
+                            show = False
+            strToPrint = "Escolha o realizador (Sair -> 0)"
+            Realizador = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+
+            clearLines(8, 13)
+
+            if Realizador != 0:
+                idRealizador = data[Realizador - 1][0]
+
+                # Retirar artigos onde o ator participa
+                command = "SELECT DISTINCT id_art, tipo, titulo, preco FROM artigos a, artigos_realizador ar, realizador r " \
+                          "WHERE a.id_art = ar.artigos_id_art AND ar.realizador_id_realizador = r.id_realizador " \
+                          "AND r.id_realizador = '%s'"
+
+                cursor.execute(command, (idRealizador,))
+                atorRealizador = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome, [3]>preco
+
+                resultAmount = cursor.rowcount
+
+                linha = 0
+                show = True
+
+                if (resultAmount > 0):
+                    for i in range(resultAmount):
+                        if show:
+                            strToPrint = "[" + str(i + 1) + "] -> " + str(atorRealizador[i][1]) + ": " + str(
+                                atorRealizador[i][2])
+                            print(term.move_xy((term.width // 2) - 25,
+                                               borderY + 8 + (linha)) + term.lightcyan + strToPrint)
+
+                            strToPrint = "Preço: {:.2f}€".format(int(atorRealizador[i][3]) / 100)
+                            print(term.move_xy(term.width - (borderX + 24),
+                                               borderY + 8 + linha) + term.lightcyan + strToPrint)
+                            linha += 1
+
+                            if (linha >= limit) and (i != (resultAmount - 1)):
+                                strToPrint = "Quer mais? (Sim/Não)"
+                                out = getUserInput_String(strToPrint, 16)
+                                out = out.lower()
+                                if out == "sim" or out == "s":
+                                    clearLines(8, 8 + linha)
+                                    linha = 0
+                                else:
+                                    show = False
+                    strToPrint = "Escolha o filme (Sair -> 0)"
+                    artigo = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+
+                idArtigo = atorRealizador[artigo - 1][0]
+
+                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+
+        else:  # Nothing to show just get out
+            strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
+            print(term.center(term.move_y(borderY + 6) + term.tomato + strToPrint))
+            strToPrint = "Escreva algo para sair"
+            getUserInput_String(strToPrint, 16)
+
+    elif option == 4:
+        searchType = "Produtor"
+        clearScreen("Pesquisa de Artigos User V1")
+
+        strToPrint = "Pesquisa por " + searchType
+        print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 6) + term.palegreen1 + strToPrint)
+
+        strToPrint = "Termo de Pesquisa"
+        searchTerm = getUserInput_String(strToPrint, 8)
+
+        clearScreen("Pesquisa de Artigos User Produtor V1")
+
+        strToPrint = "Quer ordenar? (Sim/Não)"
+        out = getUserInput_String(strToPrint, 16)
+        out = out.lower()
+
+        if out == "sim" or out == "s":
+            strToPrint = "Dê-me a ordem desejada (ASC/DESC)"
+            out = getUserInput_String(strToPrint, 16)
+            out = out.lower()
+            if out == "desc" or out == "d":
+                ordem = "ASC"
+            else:
+                ordem = "DESC"
+        else:  # order anyway but don't tell the user
+            ordem = "ASC"
+
+        # ILIKE online works in Postgres but is case insensitive
+        command = "SELECT id_produtor, primeiro_nome, segundo_nome FROM produtor WHERE primeiro_nome ILIKE %s" \
+                  "OR segundo_nome ILIKE %s" \
+                  "ORDER BY primeiro_nome {order}".format(order=ordem)  # Order is code defined, no way to alter it so
+
+        searchTermAll = "%" + searchTerm + "%"  # Find all with search term
+
+        cursor.execute(command, (searchTermAll, searchTermAll))
+        data = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome
+        resultAmount = cursor.rowcount
+
+        strToPrint = "Pesquisa por [ " + searchTerm + " ] deu " + str(resultAmount) + " resultados"
+        print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+
+        limit = 5
+        linha = 0
+        show = True
+
+        if (resultAmount > 0):
+            for i in range(resultAmount):
+                if show:
+                    strToPrint = "[" + str(i + 1) + "] -> " + str(data[i][1]) + " " + str(data[i][2])
+                    print(term.move_xy((term.width // 2) - 25, borderY + 8 + (linha)) + term.lightcyan + strToPrint)
+
+                    linha += 1
+
+                    if (linha >= limit) and (i != (resultAmount - 1)):
+                        strToPrint = "Quer mais? (Sim/Não)"
+                        out = getUserInput_String(strToPrint, 16)
+                        out = out.lower()
+                        if out == "sim" or out == "s":
+                            clearLines(8, 8 + linha)
+                            linha = 0
+                        else:
+                            show = False
+            strToPrint = "Escolha o produtor (Sair -> 0)"
+            produtor = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+
+            clearLines(8, 13)
+
+            if produtor != 0:
+                idProdutor = data[produtor - 1][0]
+
+                # Retirar artigos onde o ator participa
+                command = "SELECT DISTINCT id_art, tipo, titulo, preco FROM artigos a, artigos_produtor ap, produtor p " \
+                          "WHERE a.id_art = ap.artigos_id_art AND ap.produtor_id_produtor = p.id_produtor " \
+                          "AND p.id_produtor = '%s'"
+
+                cursor.execute(command, (idProdutor,))
+                atorProdutor = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome, [3]>preco
+
+                resultAmount = cursor.rowcount
+
+                linha = 0
+                show = True
+
+                if (resultAmount > 0):
+                    for i in range(resultAmount):
+                        if show:
+                            strToPrint = "[" + str(i + 1) + "] -> " + str(atorProdutor[i][1]) + " " + str(
+                                atorProdutor[i][2])
+                            print(term.move_xy((term.width // 2) - 25,
+                                               borderY + 8 + (linha)) + term.lightcyan + strToPrint)
+
+                            strToPrint = "Preço: {:.2f}€".format(int(atorProdutor[i][3]) / 100)
+                            print(term.move_xy(term.width - (borderX + 24),
+                                               borderY + 8 + linha) + term.lightcyan + strToPrint)
+                            linha += 1
+
+                            if (linha >= limit) and (i != (resultAmount - 1)):
+                                strToPrint = "Quer mais? (Sim/Não)"
+                                out = getUserInput_String(strToPrint, 16)
+                                out = out.lower()
+                                if out == "sim" or out == "s":
+                                    clearLines(8, 8 + linha)
+                                    linha = 0
+                                else:
+                                    show = False
+                    strToPrint = "Escolha o filme (Sair -> 0)"
+                    artigo = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+
+                idArtigo = atorProdutor[artigo - 1][0]
+
+                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+
+        else:  # Nothing to show just get out
+            strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
+            print(term.center(term.move_y(borderY + 6) + term.tomato + strToPrint))
+            strToPrint = "Escreva algo para sair"
+            getUserInput_String(strToPrint, 16)
+
+    elif option == 5:
+        return 5
+
+
+# ==== Listar artigos ====
+# This funtion lists all the items available
+# Recieves a database cursor a database conection and the user id idUser
+# Status: Done
+def listarArtigosAlugadosUser(cursor, dbcon, idUser):
+    # Always clear the screen first
+    command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser,))
+    username, = cursor.fetchone()
+    clearScreen("Listar Artigos Alugados User V1", username=username)
+    # Main Body
+
+    nowTime = datetime.datetime.now()
+    nowTimestamp = int(nowTime.timestamp())
+
+    # Check if user already own's it
+    command = "SELECT artigos_id_art FROM aluguer WHERE cliente_pessoa_id_pessoa = %s " \
+              "AND data_validade > %s " \
+              "AND cliente_pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser, nowTimestamp, idUser))
+    IDartigos = cursor.fetchall()  # [0]>artigos_id_art
+    resultAmount = cursor.rowcount
+
+    strToPrint = "Tem " + str(resultAmount) + " artigos disponíveis para visualização"
+    print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+
+    limit = 5
+    linha = 0
+    show = True
+
+    if (resultAmount > 0):
+        for i in range(resultAmount):
+            if show:
+                command = "SELECT titulo, tipo, id_art FROM artigos WHERE id_art = %s"
+                cursor.execute(command, (IDartigos[i],))
+                data = cursor.fetchone()
+
+                strToPrint = "[" + str(i + 1) + "] -> " + str(data[1]) + ": " + str(data[0])
+                print(term.move_xy((term.width // 2) - 30, borderY + 8 + (linha)) + term.lightcyan + strToPrint)
+
+                linha += 1
+
+                if (linha >= limit) and (i != (resultAmount - 1)):
+                    strToPrint = "Quer mais? (Sim/Não)"
+                    out = getUserInput_String(strToPrint, 16)
+                    out = out.lower()
+                    if out == "sim" or out == "s":
+                        clearLines(8, 8 + linha)
+                        linha = 0
+                    else:
+                        show = False
+
+        strToPrint = "Escolha o artigo (Sair -> 0)"
+        artigo = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+
+        if artigo != 0:
+            idArtigo = IDartigos[artigo - 1][0]
+
+            mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+
+    else:  # Nothing to show just get out
+        strToPrint = "Não há artigos disponíveis."
+        print(term.center(term.move_y(borderY + 6) + term.tomato + strToPrint))
+        strToPrint = "Escreva algo para sair"
+        getUserInput_String(strToPrint, 16)
+
+    return
+
+
+# ==== Pesquisa de artigos ====
+# This funtion allows the user to make a custom search
+# Recieves a database cursor a database conection and the user id idUser
+# Status: Done
+def pesquisarArtigosAlugadosUser(cursor, dbcon, idUser):
+    # Always clear the screen first
+    command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser,))
+    username, = cursor.fetchone()
+    clearScreen("Pesquisa de Artigos User V1", username=username)
     # Main Body
 
     strToPrint = "Escolha a forma de pesquisa pretendida"
@@ -805,13 +1405,130 @@ def pesquisarArtigosUser(cursor, dbcon, idUser):
     elif option == 5:
         return 5
 
-# ==== Clear the Screen ====
-# This funtion clears the screen keeping only some info
-# At the screen borders
-# Recieves the menu name to print
+def verArtigosAtuaisUser(username):
+    # Always clear the screen first
+    clearScreen("Artigos Atuais User V3", username=username)
+    # Main Body
+
+    strToPrint = "Escolha a opção pretendida"
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 6) + term.palegreen1 + strToPrint)
+
+    strToPrint = "[1] -> Ver artigos alugados"
+    print(term.move_xy((term.width // 2) - 15, borderY + 9) + term.lightcyan + strToPrint)
+
+    strToPrint = "[2] -> Pesquisar Artigo Alugado"
+    print(term.move_xy((term.width // 2) - 15, borderY + 10) + term.lightcyan + strToPrint)
+
+    strToPrint = "[3] -> Menu Principal"
+    print(term.move_xy((term.width // 2) - 15, borderY + 12) + term.lightcyan + strToPrint)
+
+    strToPrint = "Escolha uma das opções a cima"
+
+    option = getUserInput_Integer(strToPrint, 17, 3)
+
+    return option
+
+
+
+def verHistoricoEstatisticas(username):
+    # Always clear the screen first
+    clearScreen("Histórico e Estatísticas User V2", username=username)
+    # Main Body
+
+    strToPrint = "Escolha a opção pretendida"
+    print(term.move_xy((term.width // 2) - (len(strToPrint) // 2), borderY + 6) + term.palegreen1 + strToPrint)
+
+    strToPrint = "[1] -> Ver históricos artigos alugados"
+    print(term.move_xy((term.width // 2) - 15, borderY + 9) + term.lightcyan + strToPrint)
+
+    strToPrint = "[2] -> Ver estatísticas"
+    print(term.move_xy((term.width // 2) - 15, borderY + 10) + term.lightcyan + strToPrint)
+
+    strToPrint = "[3] -> Menu Principal"
+    print(term.move_xy((term.width // 2) - 15, borderY + 12) + term.lightcyan + strToPrint)
+
+    strToPrint = "Escolha uma das opções a cima"
+
+    option = getUserInput_Integer(strToPrint, 17, 3)
+
+    return option
+
+
+def listarArtigosHistoricoUser(cursor, dbcon, idUser):
+    # Always clear the screen first
+    command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser,))
+    username, = cursor.fetchone()
+    clearScreen("Listar Historico Alugados User V1", username=username)
+    # Main Body
+
+    nowTime = datetime.datetime.now()
+    nowTimestamp = int(nowTime.timestamp())
+
+    # Check if user already own's it
+    command = "SELECT artigos_id_art FROM aluguer WHERE cliente_pessoa_id_pessoa = %s " \
+              "AND data_validade <= %s " \
+              "AND cliente_pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser, nowTimestamp, idUser))
+    IDartigos = cursor.fetchall()  # [0]>artigos_id_art
+    resultAmount = cursor.rowcount
+
+    strToPrint = "Já alugou " + str(resultAmount) + " artigos"
+    print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+
+    limit = 5
+    linha = 0
+    show = True
+
+    if (resultAmount > 0):
+        for i in range(resultAmount):
+            if show:
+                command = "SELECT titulo, tipo, id_art FROM artigos WHERE id_art = %s"
+                cursor.execute(command, (IDartigos[i],))
+                data = cursor.fetchone()
+
+                strToPrint = "[" + str(i + 1) + "] -> " + str(data[1]) + ": " + str(data[0])
+                print(term.move_xy((term.width // 2) - 30, borderY + 8 + (linha)) + term.lightcyan + strToPrint)
+
+                linha += 1
+
+                if (linha >= limit) and (i != (resultAmount - 1)):
+                    strToPrint = "Quer mais? (Sim/Não)"
+                    out = getUserInput_String(strToPrint, 16)
+                    out = out.lower()
+                    if out == "sim" or out == "s":
+                        clearLines(8, 8 + linha)
+                        linha = 0
+                    else:
+                        show = False
+
+        strToPrint = "Escolha o artigo (Sair -> 0)"
+        artigo = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+
+        if artigo != 0:
+            idArtigo = IDartigos[artigo - 1][0]
+
+            mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+
+    else:  # Nothing to show just get out
+        strToPrint = "Não há artigos disponíveis."
+        print(term.center(term.move_y(borderY + 6) + term.tomato + strToPrint))
+        strToPrint = "Escreva algo para sair"
+        getUserInput_String(strToPrint, 16)
+
+    return
+
+# ==== Mostrar artigo ====
+# This funtion shows one movie to the user
+# Along with all the movie details
+# Also checks if the user already has the item
+# Recieves a database cursor a database conection and the user id and a item id
 # Status: Done
 def mostrarArtigo(cursor, dbCon, id, idUser):
-    clearScreen("Mostrar Artigo User V4")
+    command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser,))
+    username, = cursor.fetchone()
+    clearScreen("Mostrar Artigo User V4", username=username)
 
     command = "SELECT tipo, titulo, preco, tempo_para_ver, detalhes FROM artigos WHERE id_art = %s"
     cursor.execute(command, (id,))
@@ -885,8 +1602,25 @@ def mostrarArtigo(cursor, dbCon, id, idUser):
     for i in range(len(txt)):
         print(term.center(term.move_y(borderY + 14 + i) + term.lightcyan + str(txt[i])))
 
-    strToPrint = "[1] -> Alugar (" + price + ")"
-    print(term.center(term.move_y(borderY + 20) + term.palegreen1 + strToPrint))
+    nowTime = datetime.datetime.now()
+    nowTimestamp = int(nowTime.timestamp())
+
+    # Check if user already own's it
+    command = "SELECT data_validade FROM aluguer WHERE cliente_pessoa_id_pessoa = %s " \
+              "AND data_validade > %s " \
+              "AND artigos_id_art = %s"
+    cursor.execute(command, (idUser, nowTimestamp, id))
+    data = cursor.fetchone()  # [0]>id_aluguer, data_validade
+
+    if (cursor.rowcount == 0):
+        strToPrint = "[1] -> Alugar (" + price + ")"
+        print(term.center(term.move_y(borderY + 20) + term.palegreen1 + strToPrint))
+    else:
+        endDate = int(data[0])
+        endDate = datetime.datetime.fromtimestamp(endDate)
+
+        strToPrint = "Já possui esse artigo até " + str(endDate.strftime("%d %b de %Y"))
+        print(term.center(term.move_y(borderY + 20) + term.palegreen1 + strToPrint))
 
     strToPrint = "[2] -> Sair"
     print(term.center(term.move_y(borderY + 22) + term.palegreen1 + strToPrint))
@@ -899,13 +1633,16 @@ def mostrarArtigo(cursor, dbCon, id, idUser):
     elif option == 2:
         return
 
-# ==== Clear the Screen ====
-# This funtion clears the screen keeping only some info
-# At the screen borders
-# Recieves the menu name to print
+
+# ==== Alugar Artigo ====
+# This funtion rents a certain item to the user
+# Recieves a database cursor a database conection and the user id and a item id
 # Status: Done
 def alugarArtigo(cursor, dbCon, idArtigo, idUser):
-    clearScreen("Alugar Artigo User V4")
+    command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser,))
+    username, = cursor.fetchone()
+    clearScreen("Alugar Artigo User V4", username=username)
 
     command = "SELECT tipo, titulo, preco, tempo_para_ver FROM artigos WHERE id_art =%s"
     cursor.execute(command, (idArtigo,))
@@ -923,7 +1660,7 @@ def alugarArtigo(cursor, dbCon, idArtigo, idUser):
 
     finalTime = nowTime + interval
 
-    strToPrint = "Fica disponível até: " + str(finalTime.strftime("%d %b %Y às %H")) + ", total de: " + \
+    strToPrint = "Fica disponível até: " + str(finalTime.strftime("%d %b %Y às %H")) + ", total de " + \
                  str(data[3]) + " semana" + str(("s", "")[int(data[3]) == 1])  # Make plural if if bigger than one
     print(term.center(term.move_y(borderY + 7) + term.lightcyan + strToPrint))
 
@@ -933,109 +1670,35 @@ def alugarArtigo(cursor, dbCon, idArtigo, idUser):
     nowTimestamp = int(nowTime.timestamp())
     endTimestamp = int(finalTime.timestamp())
 
-    # Check if user already own's it
-    command = "SELECT id_aluguer FROM aluguer WHERE cliente_pessoa_id_pessoa = %s " \
-              "AND data_validade > %s " \
-              "AND artigos_id_art = %s"
-    cursor.execute(command, (idUser, nowTimestamp, idArtigo))
-    data = cursor.fetchone()  # [0]>id_aluguer
+    strToPrint = "Quer alugar o artigo? (Sim/Não)"
+    out = getUserInput_String(strToPrint, 16)
+    out = out.lower()
+    if out == "sim" or out == "s":
+        try:
+            command = "CALL aluguer(%s,%s,%s,%s,%s);"
+            cursor.execute(command, (nowTimestamp, endTimestamp, priceCents, idArtigo, idUser))
+        except psycopg2.errors.RaiseException as err:
+            clearScreen("Alugar Artigo User V4")
 
-    if (cursor.rowcount == 0):
-        strToPrint = "Quer alugar o artigo? (Sim/Não)"
-        out = getUserInput_String(strToPrint, 16)
-        out = out.lower()
-        if out == "sim" or out == "s":
-            try:
-                command = "CALL aluguer(%s,%s,%s,%s,%s);"
-                cursor.execute(command, (nowTimestamp, endTimestamp, priceCents, idArtigo, idUser))
-            except Exception as err:
-                clearScreen("Alugar Artigo User V4")
-                dbCon.rollback()
-                strToPrint = "Erro: " + str(err)
-                print(term.center(term.move_y(borderY + 9) + term.tomato + strToPrint))
-                strToPrint = "Voltando atrás"
-                print(term.center(term.move_y(borderY + 12) + term.tomato + strToPrint))
-                time.sleep(5)
-            else:
-                dbCon.commit()
+            dbCon.rollback()  # Rollback and revert the last command
+
+            error = str(err).split("\n")  # get the real error
+
+            strToPrint = "Erro: " + str(error[0])
+            print(term.center(term.move_y(borderY + 9) + term.tomato + strToPrint))
+            strToPrint = "Voltando atrás"
+            print(term.center(term.move_y(borderY + 12) + term.tomato + strToPrint))
+
+            time.sleep(5)  # Let the user read the error
         else:
-            return
+            dbCon.commit()  # It worked? Commit the data
     else:
-        strToPrint = "Já possui esse artigo!"
-        print(term.center(term.move_y(borderY + 15) + term.tomato + strToPrint))
-        time.sleep(8)
         return
-
     return
 # =====================================================================================================================
 # =====================================================================================================================
 # =====================================================================================================================
 # =====================================================================================================================
-
-def artigoDisponiveisUser(cursor, dbcon):
-    clearScreen("Artigos User V1")
-
-    strToPrint = "Artigos disponíveis"
-    print(term.move_xy((term.width // 2) - 10, borderY + 5) + term.palegreen1 + strToPrint)
-
-    command = "SELECT id_art,titulo FROM artigos ORDER BY id_art ASC"  # Get all the content ordered by the id
-    cursor.execute(command)
-    data = cursor.fetchall()
-    total = cursor.rowcount
-
-    counter = 0
-    exit = False
-    limit = 5
-    linha = 0
-
-    for i in range(total // 2):
-        if not exit:
-            print(term.move_xy((term.width // 2) - 35,
-                               borderY + 7 + linha) + term.lightcyan + "[" + str(data[counter][0]) + "] -> " +
-                  data[counter][1])
-
-            counter = counter + 1
-
-            print(term.move_xy((term.width // 2) + 15,
-                               borderY + 7 + linha) + term.lightcyan + "[" + str(data[counter][0]) + "] -> " +
-                  data[counter][1])
-
-            counter = counter + 1
-
-            linha = linha + 1  # Avança para a próxima linha
-
-            if i >= limit:
-                strToPrint = "Quer mais? (Sim/Não)"
-                out = getUserInput_String(strToPrint, 16)
-                out = out.lower()
-                if out == "sim":
-                    clearScreen("Artigos User V1")
-                    linha = 0
-                    limit = limit + 6
-                else:
-                    strToPrint = "Quer consultar os detalhes? (Sim/Não)"
-                    out = getUserInput_String(strToPrint, 16)
-                    out = out.lower()
-                    if out == "sim":
-                        strToPrint = "Dê-me o número do filme"
-                        out = getUserInput_Integer(strToPrint, 16)
-                        command = "SELECT titulo, detalhes FROM artigos WHERE id_art = {id}".format(id=out)
-                        cursor.execute(command)
-                        name, details = cursor.fetchone()
-                        strToPrint = "Filme" + name
-                        print(term.move_xy((term.width // 2) - 35, borderY + 5) + term.lightcyan + strToPrint)
-
-                        strToPrint = "Detalhes" + details
-                        strToPrint = wrapper.fill(text=strToPrint)
-                        print(term.move_xy((term.width // 2) - 35, borderY + 7) + term.lightcyan + strToPrint)
-                        exit = True
-                    else:
-                        exit = True
-
-                        print("Voltando ao main")
-    return
-
-
 # Main for test
 if __name__ == '__main__':
     print("==== NetFLOX starting! ====")

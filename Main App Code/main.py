@@ -65,28 +65,50 @@ def main(cur, dbConn):
 
                     userOption = menu.mainMenuUser(userData[0], userData[1], unreadMsgs)
 
+                    username = userData[0]
+
                     if userOption == 1: # Ver artigos
                         while True:
-                            userOptionVerArtigos = menu.verArtigosUser()
+                            userOptionVerArtigos = menu.verArtigosUser(username)
 
-                            if userOptionVerArtigos == 1: # Ver disponiveis
-                                break
+                            if userOptionVerArtigos == 1: # Ver todos disponiveis
+                                    userOptionListarArtigos = menu.listarArtigosUser(cur, dbConn, userID)
+
                             elif userOptionVerArtigos == 2: # Pesquisa
                                 while True:
                                     userOptionVerArtigos = menu.pesquisarArtigosUser(cur, dbConn, userID)
                                     if userOptionVerArtigos == 5:
                                         break
-                                    else:
-                                        print(userOptionVerArtigos)
+
                             elif userOptionVerArtigos == 3: # Sair
                                 break
 
                     elif userOption == 2: # Artigos Atuais
-                        loggedIn = False
+                        while True:
+                            userOptionArtigosAtuais = menu.verArtigosAtuaisUser(username)
+
+                            if userOptionArtigosAtuais == 1: # Ver todos disponiveis
+                                    userOptionListarArtigos = menu.listarArtigosAlugadosUser(cur, dbConn, userID)
+                            elif userOptionArtigosAtuais == 2: # Pesquisa
+                                while True:
+                                        break
+
+                            elif userOptionVerArtigos == 3: # Sair
+                                break
 
                     elif userOption == 3: # Historico e estatisticas
-                        loggedIn = False
+                        while True:
+                            userOptionHistorico = menu.verHistoricoEstatisticas(username)
 
+                            if userOptionHistorico == 1:  # Ver todos disponiveis
+                                menu.listarArtigosHistoricoUser(cur, dbConn, userID)
+
+                            elif userOptionHistorico == 2:  # Pesquisa
+                                while True:
+                                    break
+
+                            elif userOptionVerArtigos == 3:  # Sair
+                                break
                     elif userOption == 4: # Caixa de entrada
                         loggedIn = False
 
