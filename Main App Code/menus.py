@@ -269,7 +269,11 @@ def adminLogin():
 
 # ==== User Menus ====
 
-# Status: SemiDone
+# ==== Clear the Screen ====
+# This funtion clears the screen keeping only some info
+# At the screen borders
+# Recieves the menu name to print
+# Status: Done
 def mainMenuUser(username, balance, unreadMessages):
     clearScreen("Menu Inicial User V1")
 
@@ -306,7 +310,11 @@ def mainMenuUser(username, balance, unreadMessages):
     return option
 
 
-# Status: notDone
+# ==== Clear the Screen ====
+# This funtion clears the screen keeping only some info
+# At the screen borders
+# Recieves the menu name to print
+# Status: Done
 def verArtigosUser():
     # Always clear the screen first
     clearScreen("Artigos User V3")
@@ -330,8 +338,12 @@ def verArtigosUser():
 
     return option
 
-
-def pesquisarArtigosUser(cursor, dbcon):
+# ==== Clear the Screen ====
+# This funtion clears the screen keeping only some info
+# At the screen borders
+# Recieves the menu name to print
+# Status: Done
+def pesquisarArtigosUser(cursor, dbcon, idUser):
     # Always clear the screen first
     clearScreen("Pesquisa de Artigos User V1")
     # Main Body
@@ -385,10 +397,12 @@ def pesquisarArtigosUser(cursor, dbcon):
         clearScreen("Pesquisa de Artigos User Titulo V1")
 
         # ILIKE online works in Postgres but is case insensitive
-        command = "SELECT titulo, tipo, preco, id_art FROM artigos WHERE titulo ILIKE '%{term}%' " \
-                  "ORDER BY titulo {order}".format(term=searchTerm, order=ordem)
+        command = "SELECT titulo, tipo, preco, id_art FROM artigos WHERE titulo ILIKE %s " \
+                  "ORDER BY titulo {order}".format(order=ordem)  # Order is code defined, no way to alter it so
 
-        cursor.execute(command)
+        searchTermAll = "%" + searchTerm + "%"  # Find all with search term
+
+        cursor.execute(command, (searchTermAll,))
         data = cursor.fetchall()  # [0]>titulo, [1]>tipo, [2]>preco, [3]>id_art
         resultAmount = cursor.rowcount
 
@@ -424,7 +438,7 @@ def pesquisarArtigosUser(cursor, dbcon):
             if artigo != 0:
                 idArtigo = data[artigo - 1][3]
 
-                mostrarArtigo(cursor, dbcon, idArtigo)
+                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -460,11 +474,13 @@ def pesquisarArtigosUser(cursor, dbcon):
             ordem = "ASC"
 
         # ILIKE online works in Postgres but is case insensitive
-        command = "SELECT id_ator, primeiro_nome, segundo_nome FROM atores WHERE primeiro_nome ILIKE '%{term1}%'" \
-                  "OR segundo_nome ILIKE '%{term2}%'" \
-                  "ORDER BY primeiro_nome {order}".format(term1=searchTerm, term2=searchTerm, order=ordem)
+        command = "SELECT id_ator, primeiro_nome, segundo_nome FROM atores WHERE primeiro_nome ILIKE %s" \
+                  "OR segundo_nome ILIKE %s" \
+                  "ORDER BY primeiro_nome {order}".format(order=ordem)
 
-        cursor.execute(command)
+        searchTermAll = "%" + searchTerm + "%"  # Find all with search term
+
+        cursor.execute(command, (searchTermAll, searchTermAll))
         data = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome
         resultAmount = cursor.rowcount
 
@@ -493,21 +509,21 @@ def pesquisarArtigosUser(cursor, dbcon):
                         else:
                             show = False
             strToPrint = "Escolha o ator (Sair -> 0)"
-            artigo = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+            ator = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
 
             clearLines(8, 13)
 
-            if artigo != 0:
-                idAtor = data[artigo - 1][0]
+            if ator != 0:
+                idAtor = data[ator - 1][0]
 
                 print(idAtor)
 
                 # Retirar artigos onde o ator participa
                 command = "SELECT DISTINCT id_art, tipo, titulo, preco FROM artigos art, artigos_atores aa, atores act " \
                           "WHERE art.id_art = aa.artigos_id_art AND aa.atores_id_ator = act.id_ator " \
-                          "AND act.id_ator = '{id}'".format(id=idAtor)
+                          "AND act.id_ator = %s"
 
-                cursor.execute(command)
+                cursor.execute(command, (idAtor,))
                 atorFilmes = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome, [3]>preco
 
                 resultAmount = cursor.rowcount
@@ -542,7 +558,7 @@ def pesquisarArtigosUser(cursor, dbcon):
 
                 idArtigo = atorFilmes[artigo - 1][0]
 
-                mostrarArtigo(cursor, dbcon, idArtigo)
+                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -578,11 +594,13 @@ def pesquisarArtigosUser(cursor, dbcon):
             ordem = "ASC"
 
         # ILIKE online works in Postgres but is case insensitive
-        command = "SELECT id_produtor, primeiro_nome, segundo_nome FROM produtor WHERE primeiro_nome ILIKE '%{term1}%'" \
-                  "OR segundo_nome ILIKE '%{term2}%'" \
-                  "ORDER BY primeiro_nome {order}".format(term1=searchTerm, term2=searchTerm, order=ordem)
+        command = "SELECT id_produtor, primeiro_nome, segundo_nome FROM produtor WHERE primeiro_nome ILIKE %s" \
+                  "OR segundo_nome ILIKE %s" \
+                  "ORDER BY primeiro_nome {order}".format(order=ordem)  # Order is code defined, no way to alter it so
 
-        cursor.execute(command)
+        searchTermAll = "%" + searchTerm + "%"  # Find all with search term
+
+        cursor.execute(command, (searchTermAll, searchTermAll))
         data = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome
         resultAmount = cursor.rowcount
 
@@ -611,21 +629,19 @@ def pesquisarArtigosUser(cursor, dbcon):
                         else:
                             show = False
             strToPrint = "Escolha o realizador (Sair -> 0)"
-            artigo = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+            Realizador = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
 
             clearLines(8, 13)
 
-            if artigo != 0:
-                idAtor = data[artigo - 1][0]
-
-                print(idAtor)
+            if Realizador != 0:
+                idRealizador = data[Realizador - 1][0]
 
                 # Retirar artigos onde o ator participa
                 command = "SELECT DISTINCT id_art, tipo, titulo, preco FROM artigos a, artigos_realizador ar, realizador r " \
                           "WHERE a.id_art = ar.artigos_id_art AND ar.realizador_id_realizador = r.id_realizador " \
-                          "AND r.id_realizador = '{id}'".format(id=idAtor)
+                          "AND r.id_realizador = '%s'"
 
-                cursor.execute(command)
+                cursor.execute(command, (idRealizador,))
                 atorRealizador = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome, [3]>preco
 
                 resultAmount = cursor.rowcount
@@ -660,7 +676,7 @@ def pesquisarArtigosUser(cursor, dbcon):
 
                 idArtigo = atorRealizador[artigo - 1][0]
 
-                mostrarArtigo(cursor, dbcon, idArtigo)
+                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -696,11 +712,13 @@ def pesquisarArtigosUser(cursor, dbcon):
             ordem = "ASC"
 
         # ILIKE online works in Postgres but is case insensitive
-        command = "SELECT id_produtor, primeiro_nome, segundo_nome FROM produtor WHERE primeiro_nome ILIKE '%{term1}%'" \
-                  "OR segundo_nome ILIKE '%{term2}%'" \
-                  "ORDER BY primeiro_nome {order}".format(term1=searchTerm, term2=searchTerm, order=ordem)
+        command = "SELECT id_produtor, primeiro_nome, segundo_nome FROM produtor WHERE primeiro_nome ILIKE %s" \
+                  "OR segundo_nome ILIKE %s" \
+                  "ORDER BY primeiro_nome {order}".format(order=ordem)  # Order is code defined, no way to alter it so
 
-        cursor.execute(command)
+        searchTermAll = "%" + searchTerm + "%"  # Find all with search term
+
+        cursor.execute(command, (searchTermAll, searchTermAll))
         data = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome
         resultAmount = cursor.rowcount
 
@@ -729,21 +747,19 @@ def pesquisarArtigosUser(cursor, dbcon):
                         else:
                             show = False
             strToPrint = "Escolha o produtor (Sair -> 0)"
-            artigo = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
+            produtor = getUserInput_Integer(strToPrint, 16, resultAmount, 0)
 
             clearLines(8, 13)
 
-            if artigo != 0:
-                idAtor = data[artigo - 1][0]
-
-                print(idAtor)
+            if produtor != 0:
+                idProdutor = data[produtor - 1][0]
 
                 # Retirar artigos onde o ator participa
                 command = "SELECT DISTINCT id_art, tipo, titulo, preco FROM artigos a, artigos_produtor ap, produtor p " \
                           "WHERE a.id_art = ap.artigos_id_art AND ap.produtor_id_produtor = p.id_produtor " \
-                          "AND p.id_produtor = '{id}'".format(id=idAtor)
+                          "AND p.id_produtor = '%s'"
 
-                cursor.execute(command)
+                cursor.execute(command, (idProdutor,))
                 atorProdutor = cursor.fetchall()  # [0]>id_ator, [1]>primeiro_nome, [2]>segundo_nome, [3]>preco
 
                 resultAmount = cursor.rowcount
@@ -778,7 +794,7 @@ def pesquisarArtigosUser(cursor, dbcon):
 
                 idArtigo = atorProdutor[artigo - 1][0]
 
-                mostrarArtigo(cursor, dbcon, idArtigo)
+                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -789,12 +805,16 @@ def pesquisarArtigosUser(cursor, dbcon):
     elif option == 5:
         return 5
 
-
-def mostrarArtigo(cursor, dbCon, id):
+# ==== Clear the Screen ====
+# This funtion clears the screen keeping only some info
+# At the screen borders
+# Recieves the menu name to print
+# Status: Done
+def mostrarArtigo(cursor, dbCon, id, idUser):
     clearScreen("Mostrar Artigo User V4")
 
-    command = "SELECT tipo, titulo, preco, tempo_para_ver, detalhes FROM artigos WHERE id_art ={id}".format(id=id)
-    cursor.execute(command)
+    command = "SELECT tipo, titulo, preco, tempo_para_ver, detalhes FROM artigos WHERE id_art = %s"
+    cursor.execute(command, (id,))
     data = cursor.fetchone()  # [0]>tipo, [1]>titulo, [2]>preco, [3]>tempo_para_ver, [4]>detalhes
 
     price = "{:.2f}€".format(int(data[2]) / 100)
@@ -810,8 +830,8 @@ def mostrarArtigo(cursor, dbCon, id):
 
     command = "SELECT primeiro_nome, segundo_nome FROM realizador " \
               "JOIN artigos_realizador ar on realizador.id_realizador = ar.realizador_id_realizador " \
-              "JOIN artigos a on a.id_art = ar.artigos_id_art WHERE id_art = {id}".format(id=id)
-    cursor.execute(command)
+              "JOIN artigos a on a.id_art = ar.artigos_id_art WHERE id_art = %s"
+    cursor.execute(command, (id,))
     realizador = cursor.fetchall()
 
     if (cursor.rowcount > 0):
@@ -823,8 +843,8 @@ def mostrarArtigo(cursor, dbCon, id):
 
     command = "SELECT primeiro_nome, segundo_nome FROM produtor " \
               "JOIN artigos_produtor ap on produtor.id_produtor = ap.produtor_id_produtor " \
-              "JOIN artigos a on a.id_art = ap.artigos_id_art WHERE id_art = {id}".format(id=id)
-    cursor.execute(command)
+              "JOIN artigos a on a.id_art = ap.artigos_id_art WHERE id_art = %s"
+    cursor.execute(command, (id,))
     produtor = cursor.fetchall()
 
     if (cursor.rowcount > 0):
@@ -842,9 +862,9 @@ def mostrarArtigo(cursor, dbCon, id):
 
     command = "SELECT primeiro_nome, segundo_nome FROM atores " \
               "JOIN artigos_atores aa on atores.id_ator = aa.atores_id_ator " \
-              "JOIN artigos a on a.id_art = aa.artigos_id_art WHERE id_art = {id}".format(id=id)
+              "JOIN artigos a on a.id_art = aa.artigos_id_art WHERE id_art = %s"
 
-    cursor.execute(command)
+    cursor.execute(command, (id,))
     actores = cursor.fetchall()
 
     strToPrint = "Atores:"
@@ -875,76 +895,78 @@ def mostrarArtigo(cursor, dbCon, id):
     option = getUserInput_Integer(strToPrint, 23, 2)
 
     if option == 1:
-        alugarArtigo(cursor, dbCon, id)
+        alugarArtigo(cursor, dbCon, id, idUser)
     elif option == 2:
         return
 
-
-def alugarArtigo(cursor, dbCon, id):
+# ==== Clear the Screen ====
+# This funtion clears the screen keeping only some info
+# At the screen borders
+# Recieves the menu name to print
+# Status: Done
+def alugarArtigo(cursor, dbCon, idArtigo, idUser):
     clearScreen("Alugar Artigo User V4")
 
-    command = "SELECT tipo, titulo, preco, tempo_para_ver FROM artigos WHERE id_art ={id}".format(id=id)
-    cursor.execute(command)
+    command = "SELECT tipo, titulo, preco, tempo_para_ver FROM artigos WHERE id_art =%s"
+    cursor.execute(command, (idArtigo,))
     data = cursor.fetchone()  # [0]>tipo, [1]>titulo, [2]>preco, [3]>tempo_para_ver, [4]>detalhes
 
     priceCents = int(data[2])
 
-    price = "Preço: {:.2f}€".format(int(data[2]) / 100)
+    price = "{:.2f}€".format(int(data[2]) / 100)
 
-    strToPrint = str(data[0]) + ": "
-    offX = len(strToPrint)
-    print(term.move_xy((term.width // 2) - 10 - offX, borderY + 5) + term.palegreen1 + strToPrint)
-    strToPrint = str(data[1])
-    print(term.move_xy((term.width // 2) - 10, borderY + 5) + term.lightcyan + strToPrint)
+    strToPrint = str(data[0]) + ": " + str(data[1])
+    print(term.center(term.move_y(borderY + 5) + term.lightcyan + strToPrint))
 
-    nowDatetime = datetime.datetime.now()
-    interval = datetime.timedelta(weeks=int(data[3]))
+    nowTime = datetime.datetime.now()
+    interval = datetime.timedelta(weeks=int(data[3]), hours=1)  # Just add an hour to prevent any time mistakes
 
-    finalDate = nowDatetime + interval
+    finalTime = nowTime + interval
 
-    strToPrint = "Fica disponível até: " + str(finalDate.strftime("%d %b %Y às %H:%M")) + ", total de: " + str(data[3]) + " semanas"
+    strToPrint = "Fica disponível até: " + str(finalTime.strftime("%d %b %Y às %H")) + ", total de: " + \
+                 str(data[3]) + " semana" + str(("s", "")[int(data[3]) == 1])  # Make plural if if bigger than one
     print(term.center(term.move_y(borderY + 7) + term.lightcyan + strToPrint))
 
-    time.sleep(10)
+    strToPrint = "Preço total pelo aluguer: " + price
+    print(term.center(term.move_y(borderY + 9) + term.lightcyan + strToPrint))
 
-    # Nice read
-    # In PostgreSQL, a transaction is set up by surrounding the SQL commands of the transaction
-    # with BEGIN and COMMIT commands. https://www.postgresql.org/docs/8.3/tutorial-transactions.html
+    nowTimestamp = int(nowTime.timestamp())
+    endTimestamp = int(finalTime.timestamp())
 
-    # cursor.execute("BEGIN")
-    #
-    # # command =
-    # cursor.execute(command)
-    #
-    # cursor.execute("COMMIT")
+    # Check if user already own's it
+    command = "SELECT id_aluguer FROM aluguer WHERE cliente_pessoa_id_pessoa = %s " \
+              "AND data_validade > %s " \
+              "AND artigos_id_art = %s"
+    cursor.execute(command, (idUser, nowTimestamp, idArtigo))
+    data = cursor.fetchone()  # [0]>id_aluguer
 
+    if (cursor.rowcount == 0):
+        strToPrint = "Quer alugar o artigo? (Sim/Não)"
+        out = getUserInput_String(strToPrint, 16)
+        out = out.lower()
+        if out == "sim" or out == "s":
+            try:
+                command = "CALL aluguer(%s,%s,%s,%s,%s);"
+                cursor.execute(command, (nowTimestamp, endTimestamp, priceCents, idArtigo, idUser))
+            except Exception as err:
+                clearScreen("Alugar Artigo User V4")
+                dbCon.rollback()
+                strToPrint = "Erro: " + str(err)
+                print(term.center(term.move_y(borderY + 9) + term.tomato + strToPrint))
+                strToPrint = "Voltando atrás"
+                print(term.center(term.move_y(borderY + 12) + term.tomato + strToPrint))
+                time.sleep(5)
+            else:
+                dbCon.commit()
+        else:
+            return
+    else:
+        strToPrint = "Já possui esse artigo!"
+        print(term.center(term.move_y(borderY + 15) + term.tomato + strToPrint))
+        time.sleep(8)
+        return
 
-# BEGIN
-#     TRANSACTION[Tran1]
-#
-# BEGIN TRY
-#     INSERT
-#     INTO[Test].[dbo].[T1]([Title], [AVG])
-#     VALUES('Tidd130', 130), ('Tidd230', 230)
-#
-#     UPDATE[Test].[dbo].[T1]
-#     SET[Title] = N
-#     'az2', [AVG] = 1
-#     WHERE[dbo].[T1].[Title] = N
-#     'az'
-#
-#     COMMIT
-#     TRANSACTION[Tran1]
-#
-# END TRY
-#
-# BEGIN CATCH
-#
-# ROLLBACK TRANSACTION[Tran1]
-#
-# END CATCH
-
-
+    return
 # =====================================================================================================================
 # =====================================================================================================================
 # =====================================================================================================================

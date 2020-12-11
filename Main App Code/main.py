@@ -39,6 +39,8 @@ def main(cur, dbConn):
             loginStatus = loginData[0]
             userID = loginData[1]
 
+            print(userID)
+
             loggedIn = True
 
             while loggedIn:
@@ -57,9 +59,8 @@ def main(cur, dbConn):
                     else:
                         unreadMsgs, = unreadMsgs
 
-                    command = "SELECT pessoa_nome, saldo FROM cliente WHERE pessoa_email = '{userEmail}'".format(
-                        userEmail=userID)
-                    cursor.execute(command)
+                    command = "SELECT pessoa_nome, saldo FROM cliente WHERE pessoa_id_pessoa = %s"
+                    cursor.execute(command, (userID,))
                     userData = cursor.fetchone()  # Using , should be ok since the user exists (i.e made the login)
 
                     userOption = menu.mainMenuUser(userData[0], userData[1], unreadMsgs)
@@ -72,16 +73,12 @@ def main(cur, dbConn):
                                 break
                             elif userOptionVerArtigos == 2: # Pesquisa
                                 while True:
-                                    userOptionVerArtigos = menu.pesquisarArtigosUser(cur, dbConn)
+                                    userOptionVerArtigos = menu.pesquisarArtigosUser(cur, dbConn, userID)
                                     if userOptionVerArtigos == 5:
                                         break
                                     else:
                                         print(userOptionVerArtigos)
-                            elif userOptionVerArtigos == 3: # Alugar
-                                break
-                            elif userOptionVerArtigos == 4:
-                                break
-                            elif userOptionVerArtigos == 5:
+                            elif userOptionVerArtigos == 3: # Sair
                                 break
 
                     elif userOption == 2: # Artigos Atuais
@@ -116,20 +113,19 @@ def login(cur, dbConn):
         if userOption == 1:
             userInfo = menu.userLogin()
 
-            command = "SELECT pessoa_password FROM cliente WHERE pessoa_email = '{userEmail}'".format(
-                userEmail=userInfo[0])
-            cursor.execute(command)
+            command = "SELECT pessoa_id_pessoa, pessoa_password FROM cliente WHERE pessoa_email = %s"
+            cursor.execute(command, (userInfo[0],))
             data = cursor.fetchone()
 
             if (cursor.rowcount == 0):
                 error = "userNotExist"
             else:
-                truePwd, = data
+                truePwd = data[1]
                 loginAccepted = crypt.verify(userInfo[1], truePwd)
                 if not loginAccepted:
                     error = "wrongPassword"
                 elif loginAccepted:
-                    return "User", userInfo[0]
+                    return "User", data[0]
 
 
         elif userOption == 2:
@@ -141,10 +137,8 @@ def login(cur, dbConn):
 
                 encPassword = crypt.hash(userInfo[2])
 
-                command = "INSERT INTO cliente (pessoa_email, pessoa_nome, pessoa_password) VALUES ('{email}','{nome}','{password}')".format(
-                    email=userInfo[1], nome=userInfo[0], password=encPassword)
-
-                cur.execute(command)
+                command = "INSERT INTO cliente (pessoa_email, pessoa_nome, pessoa_password) VALUES (%s,%s,%s)"
+                cur.execute(command,(userInfo[1], userInfo[0], encPassword))
             except psycopg2.errors.UniqueViolation:
                 dbConn.rollback()
                 error = "userAlreadyExist"
@@ -154,20 +148,19 @@ def login(cur, dbConn):
         elif userOption == 3:
             adminInfo = menu.adminLogin()
 
-            command = "SELECT pessoa_password FROM admin WHERE pessoa_email = '{adminEmail}'".format(
-                adminEmail=adminInfo[0])
-            cursor.execute(command)
+            command = "SELECT pessoa_id_pessoa, pessoa_password FROM admin WHERE pessoa_email = %s"
+            cursor.execute(command, (adminInfo[0]))
             data = cursor.fetchone()
 
             if (cursor.rowcount == 0):
                 error = "userNoPermission"
             else:
-                truePwd, = data
+                truePwd = data[1]
                 loginAccepted = crypt.verify(adminInfo[1], truePwd)
                 if not loginAccepted:
                     error = "wrongPassword"
                 elif loginAccepted:
-                    return "Admin", adminInfo[0]
+                    return "Admin", data[0]
 
         elif userOption == 4:
             return "Exit",
