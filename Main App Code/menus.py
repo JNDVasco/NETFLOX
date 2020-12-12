@@ -292,7 +292,7 @@ def mainMenuUser(username, balance, unreadMessages):
     strToPrint = "[1] -> Ver artigos"
     print(term.move_xy((term.width // 2) - 15, borderY + 9) + term.lightcyan + strToPrint)
 
-    strToPrint = "[2] -> Artigos atuais"
+    strToPrint = "[2] -> Artigos alugados"
     print(term.move_xy((term.width // 2) - 15, borderY + 10) + term.lightcyan + strToPrint)
 
     strToPrint = "[3] -> Histórico e Estatísticas"
@@ -341,7 +341,7 @@ def verArtigosUser(username):
 # This funtion lists all the items available
 # Recieves a database cursor a database conection and the user id idUser
 # Status: Done
-def listarArtigosUser(cursor, dbcon, idUser):
+def listarArtigosUser(cursor, dbCon, idUser):
     # Always clear the screen first
     command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
     cursor.execute(command, (idUser,))
@@ -386,7 +386,7 @@ def listarArtigosUser(cursor, dbcon, idUser):
         if artigo != 0:
             idArtigo = data[artigo - 1][3]
 
-            mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+            mostrarArtigo(cursor, dbCon, idArtigo, idUser)
 
     else:  # Nothing to show just get out
         strToPrint = "Não há artigos disponíveis."
@@ -401,7 +401,7 @@ def listarArtigosUser(cursor, dbcon, idUser):
 # This funtion allows the user to make a custom search
 # Recieves a database cursor a database conection and the user id idUser
 # Status: Done
-def pesquisarArtigosUser(cursor, dbcon, idUser):
+def pesquisarArtigosUser(cursor, dbCon, idUser):
     # Always clear the screen first
     command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
     cursor.execute(command, (idUser,))
@@ -499,7 +499,7 @@ def pesquisarArtigosUser(cursor, dbcon, idUser):
             if artigo != 0:
                 idArtigo = data[artigo - 1][3]
 
-                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+                mostrarArtigo(cursor, dbCon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -619,7 +619,7 @@ def pesquisarArtigosUser(cursor, dbcon, idUser):
 
                 idArtigo = atorFilmes[artigo - 1][0]
 
-                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+                mostrarArtigo(cursor, dbCon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -737,7 +737,7 @@ def pesquisarArtigosUser(cursor, dbcon, idUser):
 
                 idArtigo = atorRealizador[artigo - 1][0]
 
-                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+                mostrarArtigo(cursor, dbCon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -855,7 +855,7 @@ def pesquisarArtigosUser(cursor, dbcon, idUser):
 
                 idArtigo = atorProdutor[artigo - 1][0]
 
-                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+                mostrarArtigo(cursor, dbCon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -867,11 +867,11 @@ def pesquisarArtigosUser(cursor, dbcon, idUser):
         return 5
 
 
-# ==== Listar artigos ====
-# This funtion lists all the items available
+# ==== Listar artigos alugados ====
+# This funtion lists all the rented items available
 # Recieves a database cursor a database conection and the user id idUser
 # Status: Done
-def listarArtigosAlugadosUser(cursor, dbcon, idUser):
+def listarArtigosAlugadosUser(cursor, dbCon, idUser):
     # Always clear the screen first
     command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
     cursor.execute(command, (idUser,))
@@ -925,10 +925,10 @@ def listarArtigosAlugadosUser(cursor, dbcon, idUser):
         if artigo != 0:
             idArtigo = IDartigos[artigo - 1][0]
 
-            mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+            mostrarArtigo(cursor, dbCon, idArtigo, idUser)
 
     else:  # Nothing to show just get out
-        strToPrint = "Não há artigos disponíveis."
+        strToPrint = "Não há artigos disponíveis, alugue um na nossa loja!"
         print(term.center(term.move_y(borderY + 6) + term.tomato + strToPrint))
         strToPrint = "Escreva algo para sair"
         getUserInput_String(strToPrint, 16)
@@ -936,11 +936,11 @@ def listarArtigosAlugadosUser(cursor, dbcon, idUser):
     return
 
 
-# ==== Pesquisa de artigos ====
+# ==== Pesquisa de artigos alugados ====
 # This funtion allows the user to make a custom search
 # Recieves a database cursor a database conection and the user id idUser
-# Status: Done
-def pesquisarArtigosAlugadosUser(cursor, dbcon, idUser):
+# Status: Not Done
+def pesquisarArtigosAlugadosUser(cursor, dbCon, idUser):
     # Always clear the screen first
     command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
     cursor.execute(command, (idUser,))
@@ -1038,7 +1038,7 @@ def pesquisarArtigosAlugadosUser(cursor, dbcon, idUser):
             if artigo != 0:
                 idArtigo = data[artigo - 1][3]
 
-                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+                mostrarArtigo(cursor, dbCon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -1158,7 +1158,7 @@ def pesquisarArtigosAlugadosUser(cursor, dbcon, idUser):
 
                 idArtigo = atorFilmes[artigo - 1][0]
 
-                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+                mostrarArtigo(cursor, dbCon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -1276,7 +1276,7 @@ def pesquisarArtigosAlugadosUser(cursor, dbcon, idUser):
 
                 idArtigo = atorRealizador[artigo - 1][0]
 
-                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+                mostrarArtigo(cursor, dbCon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -1394,7 +1394,7 @@ def pesquisarArtigosAlugadosUser(cursor, dbcon, idUser):
 
                 idArtigo = atorProdutor[artigo - 1][0]
 
-                mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+                mostrarArtigo(cursor, dbCon, idArtigo, idUser)
 
         else:  # Nothing to show just get out
             strToPrint = "Pesquisa por [ " + searchTerm + " ] não teve resultados."
@@ -1405,9 +1405,10 @@ def pesquisarArtigosAlugadosUser(cursor, dbcon, idUser):
     elif option == 5:
         return 5
 
-def verArtigosAtuaisUser(username):
+
+def verArtigosAlugadosUser(username):
     # Always clear the screen first
-    clearScreen("Artigos Atuais User V3", username=username)
+    clearScreen("Artigos alugados User V3", username=username)
     # Main Body
 
     strToPrint = "Escolha a opção pretendida"
@@ -1429,7 +1430,9 @@ def verArtigosAtuaisUser(username):
     return option
 
 
-
+# ==== Estatisticas ====
+# This funtion shows one movie to the user
+# Status: Done
 def verHistoricoEstatisticas(username):
     # Always clear the screen first
     clearScreen("Histórico e Estatísticas User V2", username=username)
@@ -1454,7 +1457,83 @@ def verHistoricoEstatisticas(username):
     return option
 
 
-def listarArtigosHistoricoUser(cursor, dbcon, idUser):
+# ==== Alugar Artigo ====
+# This funtion rents a certain item to the user
+# Recieves a database cursor a database conection and the user id and a item id
+# Status: Done
+def estatisticasUser(cursor, dbCon, idUser):
+    command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser,))
+    username, = cursor.fetchone()
+    clearScreen("Estastísticas User V4", username=username)
+
+    # Total gasto
+    command = "SELECT CAST(SUM(preco) AS BIGINT) FROM aluguer WHERE cliente_pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser,))
+    stats = cursor.fetchall()  # [0]>SUM(preco)
+
+    if (cursor.rowcount > 0):
+
+        price = "{:.2f}€".format(int(stats[0][0]) / 100)
+
+        strToPrint = "No total já gastou " + str(price)
+        print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+        strToPrint = "Dos quais:"
+        print(term.center(term.move_y(borderY + 8) + term.palegreen1 + strToPrint))
+
+    else:  # Nothing to show just get out
+        strToPrint = "No total já gastou muito! Muito obrigado! "
+        print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+
+    # Filmes
+    command = "SELECT CAST(SUM(aluguer.preco) AS BIGINT) FROM aluguer " \
+              "JOIN artigos a on a.id_art = aluguer.artigos_id_art " \
+              "WHERE a.tipo = 'Filme'"
+
+    cursor.execute(command)
+    stats = cursor.fetchall()  # [0]>SUM(preco), [1]>Tipo
+
+    if (cursor.rowcount > 0):
+        price = "{:.2f}€".format(int(stats[0][0]) / 100)
+        strToPrint = price + " em filmes"
+        print(term.center(term.move_y(borderY + 10) + term.lightcyan + strToPrint))
+
+    # Séries
+    command = "SELECT CAST(SUM(aluguer.preco) AS BIGINT) FROM aluguer " \
+              "JOIN artigos a on a.id_art = aluguer.artigos_id_art " \
+              "WHERE a.tipo = 'Série'"
+
+    cursor.execute(command)
+    stats = cursor.fetchall()  # [0]>SUM(preco) , [1]>Tipo
+
+    if (cursor.rowcount > 0):
+        price = "{:.2f}€".format(int(stats[0][0]) / 100)
+        strToPrint = price + " em séries"
+        print(term.center(term.move_y(borderY + 11) + term.lightcyan + strToPrint))
+
+    # Documentários
+    command = "SELECT CAST(SUM(aluguer.preco) AS BIGINT) FROM aluguer " \
+              "JOIN artigos a on a.id_art = aluguer.artigos_id_art " \
+              "WHERE a.tipo = 'Documentário'"
+
+    cursor.execute(command)
+    stats = cursor.fetchall()  # [0]>SUM(preco), [1]>Tipo
+
+    if (cursor.rowcount > 0):
+        price = "{:.2f}€".format(int(stats[0][0]) / 100)
+        strToPrint = price + " em documentários"
+        print(term.center(term.move_y(borderY + 12) + term.lightcyan + strToPrint))
+
+    strToPrint = "Escreva algo para sair"
+    getUserInput_String(strToPrint, 16)
+
+    return
+
+
+# ==== Historico ====
+# This funtion shows all the items the user rented
+# Status: Done
+def listarArtigosHistoricoUser(cursor, dbCon, idUser):
     # Always clear the screen first
     command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
     cursor.execute(command, (idUser,))
@@ -1508,10 +1587,10 @@ def listarArtigosHistoricoUser(cursor, dbcon, idUser):
         if artigo != 0:
             idArtigo = IDartigos[artigo - 1][0]
 
-            mostrarArtigo(cursor, dbcon, idArtigo, idUser)
+            mostrarArtigo(cursor, dbCon, idArtigo, idUser)
 
     else:  # Nothing to show just get out
-        strToPrint = "Não há artigos disponíveis."
+        strToPrint = "Nunca alugou nada na NetFLOX, visite a nossa loja!"
         print(term.center(term.move_y(borderY + 6) + term.tomato + strToPrint))
         strToPrint = "Escreva algo para sair"
         getUserInput_String(strToPrint, 16)
@@ -1612,9 +1691,18 @@ def mostrarArtigo(cursor, dbCon, id, idUser):
     cursor.execute(command, (idUser, nowTimestamp, id))
     data = cursor.fetchone()  # [0]>id_aluguer, data_validade
 
+    # Get the user input
+
     if (cursor.rowcount == 0):
         strToPrint = "[1] -> Alugar (" + price + ")"
         print(term.center(term.move_y(borderY + 20) + term.palegreen1 + strToPrint))
+
+        strToPrint = "[2] -> Sair"
+        print(term.center(term.move_y(borderY + 22) + term.palegreen1 + strToPrint))
+
+        strToPrint = "Escolha uma das opções a cima"
+        option = getUserInput_Integer(strToPrint, 23, 2)
+
     else:
         endDate = int(data[0])
         endDate = datetime.datetime.fromtimestamp(endDate)
@@ -1622,11 +1710,11 @@ def mostrarArtigo(cursor, dbCon, id, idUser):
         strToPrint = "Já possui esse artigo até " + str(endDate.strftime("%d %b de %Y"))
         print(term.center(term.move_y(borderY + 20) + term.palegreen1 + strToPrint))
 
-    strToPrint = "[2] -> Sair"
-    print(term.center(term.move_y(borderY + 22) + term.palegreen1 + strToPrint))
+        strToPrint = "[1] -> Sair"
+        print(term.center(term.move_y(borderY + 22) + term.palegreen1 + strToPrint))
 
-    strToPrint = "Escolha uma das opções a cima"
-    option = getUserInput_Integer(strToPrint, 23, 2)
+        strToPrint = "Escolha uma das opções a cima"
+        option = getUserInput_Integer(strToPrint, 23, 1) + 1  # Lazy way to reduce line of codes
 
     if option == 1:
         alugarArtigo(cursor, dbCon, id, idUser)
@@ -1695,6 +1783,92 @@ def alugarArtigo(cursor, dbCon, idArtigo, idUser):
     else:
         return
     return
+
+
+# ==== Caixa de Entrada ====
+# This funtion shows the user all the messages he recieved
+# Recieves a database cursor a database conection and the user id and a item id
+# Status: Badly Done, tables are messed up, if the message is for all creates lots of copys
+# If one reads a for all messages every other user see it as read
+def caixaEntradaUser(cursor, dbConn, idUser):
+    command = "SELECT pessoa_nome FROM cliente WHERE pessoa_id_pessoa = %s"
+    cursor.execute(command, (idUser,))
+    username, = cursor.fetchone()
+    clearScreen("Caixa de entrada V2", username=username)
+
+    strToPrint = "Caixa de Entrada"
+    print(term.center(term.move_y(borderY + 6) + term.palegreen1 + strToPrint))
+
+    command = "SELECT assunto, corpo, mensagens_lida, id_msg FROM mensagem"
+    cursor.execute(command)
+    data = cursor.fetchall()  # [0]>assunto, [1]>corpo, [2]>mensagens_n_lidas, [3]>id_msg
+
+    resultAmount = cursor.rowcount
+
+    limit = 5
+    linha = 0
+    show = True
+
+    print(term.move_xy((term.width // 2) - 8,
+                       borderY + 20) + term.dodgerblue + "Por ler" + term.move_right(10) + term.lightcyan + "Lida")
+
+    if (resultAmount > 0):
+        for i in range(resultAmount):
+            if show:
+                if data[i][2] == False:
+                    strToPrint = "[" + str(i + 1) + "] -> " + str(data[i][0])
+                    print(term.move_xy((term.width // 2) - 10,
+                                       borderY + 8 + linha) + term.dodgerblue + strToPrint + term.normal)
+                else:
+                    strToPrint = "[" + str(i + 1) + "] -> " + str(data[i][0])
+                    print(
+                        term.move_xy((term.width // 2) - 10, borderY + 8 + linha) + term.lightcyan + strToPrint)
+
+                linha += 1
+
+                if (linha >= limit) and (i != (resultAmount - 1)):
+                    strToPrint = "Quer mais? (Sim/Não)"
+                    out = getUserInput_String(strToPrint, 16)
+                    out = out.lower()
+                    if out == "sim" or out == "s":
+                        clearLines(8, 8 + linha)
+                        linha = 0
+                    else:
+                        show = False
+
+        strToPrint = "Escolha a mensagem (Sair -> 0)"
+        mensagem = getUserInput_Integer(strToPrint, 16, resultAmount, 0) - 1  # Arrays start at 0
+
+        if mensagem != 0:
+            clearScreen("Caixa de entrada V2", username=username)
+
+            strToPrint = str(data[mensagem][0])
+            print(term.center(term.move_y(borderY + 6) + term.palegreen1 + strToPrint))
+
+            textToWrap = data[mensagem][1]
+
+            txt = wrapper.wrap(text=textToWrap)
+
+            for i in range(len(txt)):
+                print(term.center(term.move_y(borderY + 9 + i) + term.lightcyan + str(txt[i])))
+
+            strToPrint = "Escreva algo para sair"
+            getUserInput_String(strToPrint, 16)
+
+            msdId = data[mensagem][3]
+
+            command = "UPDATE mensagem SET mensagens_lida = True WHERE id_msg = %s"
+            cursor.execute(command, (msdId,))
+            dbConn.commit()
+
+    else:  # Nothing to show just get out
+        strToPrint = "Não tem mensagens"
+        print(term.center(term.move_y(borderY + 6) + term.lightcyan + strToPrint))
+        strToPrint = "Escreva algo para sair"
+        getUserInput_String(strToPrint, 16)
+    return
+
+
 # =====================================================================================================================
 # =====================================================================================================================
 # =====================================================================================================================

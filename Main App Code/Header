@@ -10,3 +10,21 @@
 #
 #==============================================================
 
+
+
+
+
+
+                                    [3] -> Menu Principal
+
+
+
+
+
+Traceback (most recent call last):  Escolha uma das opções a cima: 2
+  File ".\main.py", line 223, in <module>
+    main(cursor, conn)
+  File ".\main.py", line 106, in main
+    menu.estatisticasUser(cur, dbConn, userID)
+TypeError: estatisticasUser() missing 1 required positional argument: 'idUser'
+PS C:\Documentos 2\PyCharm\NETFLOX\Main App Code>
