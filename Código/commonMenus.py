@@ -1,3 +1,22 @@
+# ==============================================================
+# Base de Dados - UCoimbra MiEEC 2020/2021
+# Projeto: NETFLOX
+# Gonçalo Cavaleiro - UC2018279569
+# João Vasco        - UC2019236378
+#
+# Ficheiro: commonMenus.py
+#
+# Descrição:
+# Este ficheiro contém todos os menus comuns
+#
+# Colors
+# Main:        palegreen1
+# Secondary:   lightcyan
+# Error:       tomato
+#
+# print(term.home + term.on_blue + term.clear) Clear Screen
+# ==============================================================
+
 import datetime
 import textwrap
 import time
