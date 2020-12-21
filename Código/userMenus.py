@@ -1387,41 +1387,56 @@ def estatisticas(cursor, dbCon, idUser):
     # Filmes
     command = "SELECT CAST(SUM(aluguer.preco) AS BIGINT) FROM aluguer " \
               "JOIN artigos a on a.id_art = aluguer.artigos_id_art " \
-              "WHERE a.tipo = 'Filme'"
+              "WHERE a.tipo = 'Filme' AND aluguer.cliente_pessoa_id_pessoa = %s"
 
-    cursor.execute(command)
+    cursor.execute(command, (idUser,))
     stats = cursor.fetchall()  # [0]>SUM(preco), [1]>Tipo
 
-    if (cursor.rowcount > 0):
+    print(stats)
+    time.sleep(3)
+
+    if (stats[0][0] != "None"):
         price = "{:.2f}€".format(int(stats[0][0]) / 100)
         strToPrint = price + " em filmes"
         print(term.center(term.move_y(borderY + 10) + term.lightcyan + strToPrint))
+    else:
+        strToPrint = "Ainda não alugou filmes"
+        print(term.center(term.move_y(borderY + 11) + term.lightcyan + strToPrint))
 
     # Séries
     command = "SELECT CAST(SUM(aluguer.preco) AS BIGINT) FROM aluguer " \
               "JOIN artigos a on a.id_art = aluguer.artigos_id_art " \
-              "WHERE a.tipo = 'Série'"
+              "WHERE a.tipo = 'Série' AND aluguer.cliente_pessoa_id_pessoa = %s"
 
-    cursor.execute(command)
+    cursor.execute(command, (idUser,))
     stats = cursor.fetchall()  # [0]>SUM(preco) , [1]>Tipo
 
-    if (cursor.rowcount > 0):
+    print(stats)
+    time.sleep(3)
+
+    if (stats[0][0] != "None"):
         price = "{:.2f}€".format(int(stats[0][0]) / 100)
         strToPrint = price + " em séries"
+        print(term.center(term.move_y(borderY + 11) + term.lightcyan + strToPrint))
+    else:
+        strToPrint = "Ainda não alugou séries"
         print(term.center(term.move_y(borderY + 11) + term.lightcyan + strToPrint))
 
     # Documentários
     command = "SELECT CAST(SUM(aluguer.preco) AS BIGINT) FROM aluguer " \
               "JOIN artigos a on a.id_art = aluguer.artigos_id_art " \
-              "WHERE a.tipo = 'Documentário'"
+              "WHERE a.tipo = 'Documentário' AND aluguer.cliente_pessoa_id_pessoa = %s"
 
-    cursor.execute(command)
+    cursor.execute(command, (idUser,))
     stats = cursor.fetchall()  # [0]>SUM(preco), [1]>Tipo
 
-    if (cursor.rowcount > 0):
+    if (stats[0] != "None"):
         price = "{:.2f}€".format(int(stats[0][0]) / 100)
         strToPrint = price + " em documentários"
         print(term.center(term.move_y(borderY + 12) + term.lightcyan + strToPrint))
+    else:
+        strToPrint = "Ainda não alugou documentários"
+        print(term.center(term.move_y(borderY + 11) + term.lightcyan + strToPrint))
 
     strToPrint = "Escreva algo para sair"
     getUserInput_String(strToPrint, 16)
